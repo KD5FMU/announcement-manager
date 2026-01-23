@@ -14,3 +14,4 @@ www-data ALL=(root) NOPASSWD: /etc/asterisk/local/audio_convert.sh
 
 # NO OTHER COMMANDS ALLOWED - do NOT add /bin/cp, /bin/chown, /bin/chmod
 # These are dangerous if unrestricted
+www-data ALL=(root) NOPASSWD: /usr/local/bin/piper_prompt_tts.sh

@@ -225,11 +225,11 @@ $(document).ready(function () {
                     .click(function() {
                         let parts = c.time.split(" ");
 
-                        let min   = prompt("Minute:", parts[0]); if(min===null) return;
-                        let hour  = prompt("Hour:", parts[1]); if(hour===null) return;
-                        let dom   = prompt("Day of Month:", parts[2]); if(dom===null) return;
-                        let month = prompt("Month:", parts[3]); if(month===null) return;
-                        let dow   = prompt("Day of Week:", parts[4]); if(dow===null) return;
+                        let min   = prompt("Minute: Which minute of the hour?", parts[0]); if(min===null) return;
+                        let hour  = prompt("Hour: Which Hours do you want? 1,3,7= specific hours 2-19 is a range of hours", parts[1]); if(hour===null) return;
+                        let dom   = prompt("Day of Month: Which days of the Month? choose * for every day, or choose which days ie. 1-25", parts[2]); if(dom===null) return;
+                        let month = prompt("Month: Which Months do you want? * for everymoth, or you can choose specific or a range", parts[3]); if(month===null) return;
+                        let dow   = prompt("Day of Week: Which days of the week? * is everyday or you can choose 1-7 where Sun=1", parts[4]); if(dow===null) return;
 
                         $.post("custom/update_announcement.php", {
                             raw_line: c.raw,

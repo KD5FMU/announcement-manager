@@ -40,20 +40,15 @@ check_root() { [[ $EUID -eq 0 ]] || error "Run as root (sudo)."; }
 # Install required packages FIRST – before any git clone!
 # ────────────────────────────────────────────────
 check_root
-echo_step "0. Installing required packages (sox, libsox-fmt-mp3, git, perl)"
-PACKAGES_TO_INSTALL=""
-for pkg in sox libsox-fmt-mp3 git perl; do
-    if ! dpkg -l | grep -q "$pkg"; then
-        PACKAGES_TO_INSTALL="$PACKAGES_TO_INSTALL $pkg"
-    fi
-done
-if [[ -n "$PACKAGES_TO_INSTALL" ]]; then
-    echo "Installing missing packages: $PACKAGES_TO_INSTALL"
-    apt update && apt install -y $PACKAGES_TO_INSTALL || error "Failed to install packages. Check your internet/apt sources."
-    echo "Packages installed successfully."
-else
-    echo "All required packages (sox, libsox-fmt-mp3, git, perl) are already installed – skipping."
-fi
+echo_step "0. Installing required packages (sox, libsox-fmt-mp3, perl, git)"
+# Force install git first (no check needed)
+apt update || error "apt update failed. Check internet or sources.list."
+apt install -y git || error "Failed to install git. Check internet/apt sources."
+
+# Then install the other packages (idempotent)
+apt install -y sox libsox-fmt-mp3 perl || error "Failed to install other packages."
+
+echo "All required packages (sox, libsox-fmt-mp3, git, perl) installed or already present."
 
 # Now git and perl are guaranteed to be available – proceed
 echo ""

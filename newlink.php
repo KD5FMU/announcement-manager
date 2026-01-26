@@ -416,7 +416,8 @@ $astport = exec("$CAT /etc/asterisk/iax.conf |$EGREP '^bindport' |$AWK -F\= '{pr
 $mgrport = exec("$CAT /etc/asterisk/manager.conf |$EGREP '^port =' |$SED 's/port = //g'");
 if (empty($WANONLY)) {
    $myip = exec("$WGET -t 1 -T 3 -q -O- http://checkip.dyndns.org:8245 |$CUT -d':' -f2 |$CUT -d' ' -f2 |$CUT -d'<' -f1");
-   $WL=""; $mylanip = exec("$IFCONFIG |$GREP 'inet ' |$GREP -v inet6 |$HEAD -1 |$AWK '{print $2}'");
+   $WL=""; $mylanip = exec("ip -4 addr show scope global | awk '/inet/ {print $2}' | cut -d/ -f1 | head -1");
+
    if ($mylanip == "127.0.0.1") {
       $mylanip = exec("$IFCONFIG |$GREP inet |$TAIL -1 |$AWK '{print $2}'"); $WL="W";
    }

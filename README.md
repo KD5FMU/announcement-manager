@@ -5,6 +5,7 @@ Supermon 7.4+ announcement creation and management of cron entries<br>
 <p align="center">
   <img src="https://github.com/KD5FMU/announcement-manager/blob/main/am2.png" width="600">
 </p>
+
 ### Thanks to James Carnathan - N5AD this is an Awesome new addition to Supermon 7.4 for ASL3 ###
 
 

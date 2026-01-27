@@ -27,6 +27,7 @@ TARGET_DIR="/var/www/html/supermon/custom"
 LINK_PHP="/var/www/html/supermon/link.php"
 MP3_DIR="/mp3"
 LOCAL_DIR="/etc/asterisk/local"
+ANNOUNCE_DIR="/usr/local/share/asterisk/sounds/announcements"
 
 # ────────────────────────────────────────────────
 # Helpers
@@ -105,13 +106,11 @@ chown -R www-data:www-data "$TARGET_DIR"
 find "$TARGET_DIR" -type f -name "*.php" -exec chmod 644 {} \;
 find "$TARGET_DIR" -type f -name "*.inc" -exec chmod 644 {} \;
 
-# STEP 7. Asterisk sounds directory (full www-data control)
-echo_step "7. Setting ownership & permissions on Asterisk sounds"
-chown -R www-data:www-data /usr/local/share/asterisk/sounds
-chmod -R 775 /usr/local/share/asterisk/sounds
-chmod g+s /usr/local/share/asterisk/sounds
-find /usr/local/share/asterisk/sounds -type d -exec chmod 2775 {} \;
-find /usr/local/share/asterisk/sounds -type f -exec chmod 664 {} \;
+# STEP 7. Create Announcements dir + permissions
+echo_step "7. Creating Announcements dir + permissions"
+mkdir -p "$ANNOUNCE_DIR"
+chown -R www-data:www-data "$ANNOUNCE_DIR"
+chmod -R 2775 "$ANNOUNCE_DIR"
 
 # STEP 8. Install prerequisite scripts in /etc/asterisk/local/ (if missing)
 echo_step "8. Installing prerequisite scripts in $LOCAL_DIR"

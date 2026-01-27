@@ -2,8 +2,6 @@
 Supermon 7.4+ announcement creation and management of cron entries<br>
 ## This is a Fork on N5AD's Github File ##
 <br>
-To use this feature, you first need to install the Audio Convert mp3 and Play Audio files updates from over at github.com/kd5fmu aka Freddie Mac
-<img width="1920" height="1032" alt="image" src="https://github.com/user-attachments/assets/ea9052af-acf8-42ee-bd04-2a75ccab1e5f" />
 
 ### Donwload this installer script file ###
 ```

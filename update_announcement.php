@@ -22,7 +22,7 @@ if(preg_match('/playaudio\.sh\s+.*\/usr\/local\/share\/asterisk\/sounds\/(\S+)/'
 
     $file = $matches[1];
 
-    $new = "$min $hour $dom $month $dow /etc/asterisk/local/playaudio.sh /usr/local/share/asterisk/sounds/$file";
+    $new = "$min $hour $dom $month $dow /etc/asterisk/local/playaudio.sh /usr/local/share/asterisk/sounds/announcementes/$file";
 
 } else {
 

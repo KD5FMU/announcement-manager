@@ -15,5 +15,10 @@ Supermon 7.4+ announcement creation and management of cron entries<br>
 ```
 sudo wget https://raw.githubusercontent.com/KD5FMU/announcement-manager/refs/heads/main/announcement_manager.sh
 ```
+Here is the link to N5AD's Actual GitHub download
+```
+https://raw.githubusercontent.com/n5ad/announcement-manager/refs/heads/main/announcement_manager.sh
+```
+This is a nice one
 
 More to come

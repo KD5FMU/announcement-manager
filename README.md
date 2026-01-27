@@ -17,7 +17,7 @@ sudo wget https://raw.githubusercontent.com/KD5FMU/announcement-manager/refs/hea
 ```
 Here is the link to N5AD's Actual GitHub download
 ```
-https://raw.githubusercontent.com/n5ad/announcement-manager/refs/heads/main/announcement_manager.sh
+sudo wget https://raw.githubusercontent.com/n5ad/announcement-manager/refs/heads/main/announcement_manager.sh
 ```
 This is a nice one
 

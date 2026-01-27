@@ -19,7 +19,7 @@ $CONVERT_SCRIPT = '/etc/asterisk/local/audio_convert.sh';
 
 $PLAY_SCRIPT = '/etc/asterisk/local/playaudio.sh';
 
-$SOUNDS_DIR = '/usr/local/share/asterisk/sounds';
+$SOUNDS_DIR = '/usr/local/share/asterisk/sounds/announcements';
 
 
 // Get POST variables

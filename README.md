@@ -2,6 +2,9 @@
 Supermon 7.4+ announcement creation and management of cron entries<br>
 ## This is a Fork on N5AD's Github File ##
 <br>
+<p align="center">
+  <img src="https://github.com/KD5FMU/announcement-manager/blob/main/am2.png" width="600">
+</p>
 
 ### Donwload this installer script file ###
 ```

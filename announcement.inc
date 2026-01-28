@@ -5,7 +5,7 @@
 <?php if (isset($_SESSION['sm61loggedin']) && $_SESSION['sm61loggedin'] === true) { ?>
 <hr style="margin-top:30px;">
 <div id="bottom_cron_section" style="margin-top:20px;">
-
+<h1>Announcement Management System</h1>
 
 <!-- Piper TTS Section - MOVED TO TOP -->
 <h3>Generate Announcement with Piper TTS</h3>

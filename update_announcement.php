@@ -18,11 +18,11 @@ $dow   = $_POST['dow'];
 
 // Build new cron line, keep the UL file path from old line
 
-if(preg_match('/playaudio\.sh\s+.*\/usr\/local\/share\/asterisk\/sounds\/(\S+)/', $old, $matches)){
+if(preg_match('/playaudio\.sh\s+.*\/usr\/local\/share\/asterisk\/sounds\/announcements\/(\S+)/', $old, $matches)){
 
     $file = $matches[1];
 
-    $new = "$min $hour $dom $month $dow /etc/asterisk/local/playaudio.sh /usr/local/share/asterisk/sounds/$file";
+    $new = "$min $hour $dom $month $dow /etc/asterisk/local/playaudio.sh /usr/local/share/asterisk/sounds/announcementes/$file";
 
 } else {
 

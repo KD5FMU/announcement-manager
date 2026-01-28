@@ -27,6 +27,7 @@ TARGET_DIR="/var/www/html/supermon/custom"
 LINK_PHP="/var/www/html/supermon/link.php"
 MP3_DIR="/mp3"
 LOCAL_DIR="/etc/asterisk/local"
+ANNOUNCE_DIR="/usr/local/share/asterisk/sounds/announcements"
 
 # ────────────────────────────────────────────────
 # Helpers
@@ -37,23 +38,19 @@ error() { echo -e "\033[1;31mERROR:\033[0m $1" >&2; exit 1; }
 check_root() { [[ $EUID -eq 0 ]] || error "Run as root (sudo)."; }
 
 # ────────────────────────────────────────────────
-# Install required packages FIRST – force git install
+# STEP 1. Install required packages FIRST – force git install
 # ────────────────────────────────────────────────
 check_root
-echo_step "0. Installing required packages (sox, libsox-fmt-mp3, git, perl)"
-# Force install git first (no check needed)
+echo_step "1. Installing required packages (sox, libsox-fmt-mp3, git, perl)"
 apt update || error "apt update failed. Check internet or sources.list."
 apt install -y git || error "Failed to install git. Check internet/apt sources."
-# Then install the other packages (idempotent)
 apt install -y sox libsox-fmt-mp3 perl || error "Failed to install other packages."
 echo "All required packages (sox, libsox-fmt-mp3, git, perl) installed or already present."
 
-# Hard check: ensure git is now available
 if ! command -v git >/dev/null 2>&1; then
     error "git is still not installed after apt. Check your internet or apt sources."
 fi
 
-# Now git and perl are guaranteed to be available – proceed
 echo ""
 echo "Supermon Announcements Manager - Full Setup"
 echo "──────────────────────────────────────────────"
@@ -67,9 +64,9 @@ echo -n "Continue setup? (y/N) "
 read -r answer
 [[ "$answer" =~ ^[Yy]$ ]] || { echo "Aborted."; exit 0; }
 
-# Prompt for AllStar node number
+# STEP 2. Prompt for AllStar node number
 echo ""
-echo_step "Enter your AllStar node number"
+echo_step "2. Enter your AllStar node number"
 echo -n "Node number (e.g., 12345): "
 read -r NODE_NUMBER
 if [[ ! "$NODE_NUMBER" =~ ^[0-9]+$ ]]; then
@@ -77,19 +74,19 @@ if [[ ! "$NODE_NUMBER" =~ ^[0-9]+$ ]]; then
 fi
 echo "Using node number: $NODE_NUMBER"
 
-# 1. Clone repo
-echo_step "1. Cloning GitHub repo"
+# STEP 3. Clone repo
+echo_step "3. Cloning GitHub repo"
 rm -rf "$TEMP_CLONE"
 git clone --depth 1 "$REPO_URL" "$TEMP_CLONE" || error "Git clone failed"
 
-# 2. Copy PHP & inc files
-echo_step "2. Copying files to $TARGET_DIR"
+# STEP 4. Copy PHP & inc files
+echo_step "4. Copying files to $TARGET_DIR"
 mkdir -p "$TARGET_DIR"
 cp -v "$TEMP_CLONE"/*.{php,inc} "$TARGET_DIR"/ 2>/dev/null || warn "No .php/.inc files found"
 rm -rf "$TEMP_CLONE"
 
-# 3. Create /mp3 dir + permissions
-echo_step "3. Creating /mp3 directory"
+# STEP 5. Create /mp3 dir + permissions
+echo_step "5. Creating /mp3 directory"
 mkdir -p "$MP3_DIR"
 MP3_USER="${SUDO_USER:-$(whoami)}"
 echo "Granting /mp3 access to user: $MP3_USER"
@@ -103,14 +100,20 @@ chown -R www-data:www-data "$MP3_DIR"
 chmod -R 2775 "$MP3_DIR"
 echo "MP3 directory permissions set with setgid. $MP3_USER can now access /mp3."
 
-# 4. Set ownership & permissions on custom files
-echo_step "4. Setting ownership & permissions"
+# STEP 6. Set ownership & permissions on custom files
+echo_step "6. Setting ownership & permissions"
 chown -R www-data:www-data "$TARGET_DIR"
 find "$TARGET_DIR" -type f -name "*.php" -exec chmod 644 {} \;
 find "$TARGET_DIR" -type f -name "*.inc" -exec chmod 644 {} \;
 
-# 4.5. Install prerequisite scripts in /etc/asterisk/local/ (if missing)
-echo_step "4.5. Installing prerequisite scripts in $LOCAL_DIR"
+# STEP 7. Create Announcements dir + permissions
+echo_step "7. Creating Announcements dir + permissions"
+mkdir -p "$ANNOUNCE_DIR"
+chown -R www-data:www-data "$ANNOUNCE_DIR"
+chmod -R 2775 "$ANNOUNCE_DIR"
+
+# STEP 8. Install prerequisite scripts in /etc/asterisk/local/ (if missing)
+echo_step "8. Installing prerequisite scripts in $LOCAL_DIR"
 mkdir -p "$LOCAL_DIR"
 chown asterisk:asterisk "$LOCAL_DIR" 2>/dev/null || chown root:root "$LOCAL_DIR"
 chmod 755 "$LOCAL_DIR"
@@ -159,13 +162,9 @@ if [ $# -lt 1 ]; then
     echo "Usage: \$0 [input_file] [output_file.ul]"
     exit 1
 fi
-# Input file
 INPUT_FILE="$1"
-# Output file (optional second argument, defaults to input filename with .ul extension)
 OUTPUT_FILE="${2:-${INPUT_FILE%.*}.ul}"
-# Convert the audio file to 8000Hz, 16-bit, mono, raw u-law format
 sox "$INPUT_FILE" -t raw -r 8000 -c 1 -e u-law "$OUTPUT_FILE"
-# Check if conversion was successful
 if [ $? -eq 0 ]; then
     echo "Conversion successful!"
     echo "Output file: $OUTPUT_FILE"
@@ -181,59 +180,46 @@ else
     echo "$CONVERT_SCRIPT already exists – skipping"
 fi
 
-# Ensure both scripts are executable (safe even if files already existed)
 chmod +x "$PLAY_SCRIPT" "$CONVERT_SCRIPT" 2>/dev/null || true
 echo "Verified: Both scripts are executable."
 
-# 5. Backup old link.php and install new link.php from repo
-echo_step "5. Installing new link.php from repository (backup created)"
+# STEP 9. Backup old link.php and install new link.php from repo
+echo_step "9. Installing new link.php from repository (backup created)"
 if [[ -f "$LINK_PHP" ]]; then
     cp "$LINK_PHP" "${LINK_PHP}.bak"
     echo "Backup created: $LINK_PHP.bak"
 fi
-# Download new link.php from your repo
 sudo wget -O "$LINK_PHP" \
   https://raw.githubusercontent.com/n5ad/announcement-manager/main/link.php || error "Failed to download new link.php"
-# Ensure correct ownership & permissions
 chown www-data:www-data "$LINK_PHP"
 chmod 644 "$LINK_PHP"
 echo "New link.php installed successfully."
 
-# 6. Create sudoers rule for www-data
-echo_step "6. Creating sudoers rule for www-data (/etc/sudoers.d/99-supermon-announcements)"
+# STEP 10. Create sudoers rule for www-data
+echo_step "10. Creating sudoers rule for www-data (/etc/sudoers.d/99-supermon-announcements)"
 SUDOERS_FILE="/etc/sudoers.d/99-supermon-announcements"
 if [[ -f "$SUDOERS_FILE" ]]; then
     echo "$SUDOERS_FILE already exists – skipping"
 else
     cat > "$SUDOERS_FILE" << 'EOF'
 # /etc/sudoers.d/99-supermon-announcements
-# Supermon Announcements Manager - N5AD
-# Passwordless sudo for www-data to run required commands only
-# Created/updated: January 2026
-# Allow running playaudio.sh (announcement playback)
 www-data ALL=(root) NOPASSWD: /etc/asterisk/local/playaudio.sh
-# Allow managing root's crontab (for scheduling announcements)
 www-data ALL=(root) NOPASSWD: /usr/bin/crontab
-# Allow running audio_convert.sh (MP3 to .ul conversion)
 www-data ALL=(root) NOPASSWD: /etc/asterisk/local/audio_convert.sh
-# Allow copy chown and chmod of files
 www-data ALL=(ALL) NOPASSWD: /bin/cp, /bin/chown, /bin/chmod
-# Allow running piper_prompt_tts.sh
 www-data ALL=(root) NOPASSWD: /usr/local/bin/piper_prompt_tts.sh
-# Allow deletion of UL FILES
-www-data ALL=(root) NOPASSWD: /bin/rm /usr/local/share/asterisk/sounds/*.ul
+www-data ALL=(root) NOPASSWD: /bin/rm /usr/local/share/asterisk/sounds/announcements/*.ul
 EOF
     chmod 0440 "$SUDOERS_FILE"
     chown root:root "$SUDOERS_FILE"
     echo "Sudoers file created successfully."
 fi
 
-# 7. Install Piper TTS 1.2.0 ARM64 (your preferred structure)
-echo_step "7. Installing Piper TTS 1.2.0 ARM64"
+# STEP 11. Install Piper TTS 1.2.0 ARM64
+echo_step "11. Installing Piper TTS 1.2.0 ARM64"
 if [[ -f "/opt/piper/bin/piper" ]]; then
     echo "Piper already installed – skipping"
 else
-    # Download and extract Piper binary + libs
     sudo wget https://github.com/rhasspy/piper/releases/download/v1.2.0/piper_arm64.tar.gz -O /tmp/piper.tar.gz
     sudo mkdir -p /opt/piper/bin
     sudo tar -xzf /tmp/piper.tar.gz -C /opt/piper/bin
@@ -248,20 +234,10 @@ else
     echo "Piper installed successfully."
 fi
 
-# 8. Download piper_generate.php and piper_prompt_tts.sh
-echo_step "8. Downloading piper_generate.php and piper_prompt_tts.sh"
-# Download piper_generate.php
-if [[ -f "$TARGET_DIR/piper_generate.php" ]]; then
-    echo "$TARGET_DIR/piper_generate.php already exists – skipping"
-else
-    sudo wget -O "$TARGET_DIR/piper_generate.php" \
-      https://raw.githubusercontent.com/n5ad/announcement-manager/main/piper_generate.php
-    sudo chown www-data:www-data "$TARGET_DIR/piper_generate.php"
-    sudo chmod 644 "$TARGET_DIR/piper_generate.php"
-    echo "piper_generate.php downloaded."
-fi
+# STEP 12. Download piper_generate.php and piper_prompt_tts.sh
+echo_step "12. Downloading piper_prompt_tts.sh"
 
-# Download piper_prompt_tts.sh
+
 if [[ -f "/usr/local/bin/piper_prompt_tts.sh" ]]; then
     echo "/usr/local/bin/piper_prompt_tts.sh already exists – skipping"
 else
@@ -272,16 +248,15 @@ else
     echo "piper_prompt_tts.sh downloaded and made executable."
 fi
 
-# 9. Test Piper installation
-echo_step "9. Testing Piper installation"
+# STEP 13. Test Piper installation
+echo_step "13. Testing Piper installation"
 /opt/piper/bin/piper/piper --version
-# Generate a test WAV
-echo "This is a test of Piper TTS on node $(hostname)" | /opt/piper/bin/piper/piper --model /opt/piper/voices/en_US-lessac-medium.onnx --output_file /mp3/piper_test.wav
-# Check the test file
+echo "This is a test of Piper TTS on node $(hostname)" | \
+/opt/piper/bin/piper/piper --model /opt/piper/voices/en_US-lessac-medium.onnx --output_file /mp3/piper_test.wav
 ls -l /mp3/piper_test.wav
 
-# 10. Final verification
-echo_step "10. Setup complete – verification"
+# STEP 14. Final verification
+echo_step "14. Setup complete – verification"
 echo "I hope you get a lot of use from this"
 echo "Log into Supermon → Announcements Manager should now appear at the bottom."
 echo "73 — N5AD"

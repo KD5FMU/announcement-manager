@@ -24,6 +24,9 @@
 </select>
 <input type="button" class="submit" value="Install Announcement" id="install_announcement">
 <input type="button" class="submit" value="Delete MP3" id="delete_mp3" style="background-color:#dc3545; color:white; border:1px solid #c82333;">
+<input type="button" class="submit" value="Local Play" id="local_play_mp3" style="background:#28a745;color:white;border:1px solid #1e7e34;">
+<input type="button" class="submit" value="Global Play" id="global_play_mp3" style="background:#fd7e14;color:white;border:1px solid #e06b00;">
+<br><br>
 <br><br>
 
 <!-- UL Section -->
@@ -93,6 +96,47 @@ $(document).ready(function () {
             alert(data);
             loadMP3Dropdown();
         }).fail(function() { alert("Delete failed."); });
+    });
+
+// Local Play for MP3/WAV
+    $("#local_play_mp3").click(function() {
+        let f = $("#mp3_select").val();
+        if (!f) { 
+            alert("Select an MP3/WAV file first"); 
+            return; 
+        }
+        $.post("/supermon/custom/run_announcement.php", {file:f}, function(r){ 
+            alert(r); 
+        }).fail(function() {
+            alert("Local play request failed - check server logs or permissions.");
+        });
+    });
+
+// Global Play for MP3/WAV with warning
+    $("#global_play_mp3").click(function() {
+        let f = $("#mp3_select").val();
+        if (!f) { 
+            alert("Select an MP3/WAV file first"); 
+            return; 
+        }
+        if (!confirm("WARNING: This announcement will play on this node AND all currently linked nodes.\n\nContinue?")) {
+            return;
+        }
+        $.post("/supermon/custom/globalplay.php", {file: f}, function(r){ 
+            alert(r); 
+        }).fail(function() {
+            alert("Global play request failed - check server logs or permissions.");
+        });
+    });
+
+    // Delete .ul
+    $("#delete_ul").click(function() {
+        let f = $("#ul_select").val();
+        if (!f || !confirm("Delete " + f + "?")) return;
+        $.post("/supermon/custom/delete_file.php", {type:"ul", file:f}, function(r){
+            alert(r);
+            loadULDropdown();
+        });
     });
 
     // ====== Delete UL ======

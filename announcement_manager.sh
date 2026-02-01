@@ -87,8 +87,8 @@ mkdir -p "$TARGET_DIR"
 cp -v "$TEMP_CLONE"/*.{php,inc} "$TARGET_DIR"/ 2>/dev/null || warn "No .php/.inc files found"
 rm -rf "$TEMP_CLONE"
 
-# STEP 4.5 Copy announcement include to Allmon3 custom directory (copy, not move)
-echo_step "4.5 Copying announcement include to Allmon3 custom dir ($ALLMON_DIR)"
+# STEP 5 Copy announcement include to Allmon3 custom directory (copy, not move)
+echo_step "5 Copying announcement include to Allmon3 custom dir ($ALLMON_DIR)"
 mkdir -p "$ALLMON_DIR"
 
 # Source file after Supermon copy
@@ -105,8 +105,8 @@ else
 fi
 
 
-# STEP 5. Create /mp3 dir + permissions
-echo_step "5. Creating /mp3 directory"
+# STEP 6. Create /mp3 dir + permissions
+echo_step "6. Creating /mp3 directory"
 mkdir -p "$MP3_DIR"
 MP3_USER="${SUDO_USER:-$(whoami)}"
 echo "Granting /mp3 access to user: $MP3_USER"
@@ -120,20 +120,20 @@ chown -R www-data:www-data "$MP3_DIR"
 chmod -R 2775 "$MP3_DIR"
 echo "MP3 directory permissions set with setgid. $MP3_USER can now access /mp3."
 
-# STEP 6. Set ownership & permissions on custom files
-echo_step "6. Setting ownership & permissions"
+# STEP 7. Set ownership & permissions on custom files
+echo_step "7 Setting ownership & permissions"
 chown -R www-data:www-data "$TARGET_DIR"
 find "$TARGET_DIR" -type f -name "*.php" -exec chmod 644 {} \;
 find "$TARGET_DIR" -type f -name "*.inc" -exec chmod 644 {} \;
 
-# STEP 7. Create Announcements dir + permissions
-echo_step "7. Creating Announcements dir + permissions"
+# STEP 8. Create Announcements dir + permissions
+echo_step "8. Creating Announcements dir + permissions"
 mkdir -p "$ANNOUNCE_DIR"
 chown -R www-data:www-data "$ANNOUNCE_DIR"
 chmod -R 2775 "$ANNOUNCE_DIR"
 
-# STEP 8. Install prerequisite scripts in /etc/asterisk/local/ (if missing)
-echo_step "8. Installing prerequisite scripts in $LOCAL_DIR"
+# STEP 9. Install prerequisite scripts in /etc/asterisk/local/ (if missing)
+echo_step "9. Installing prerequisite scripts in $LOCAL_DIR"
 mkdir -p "$LOCAL_DIR"
 chown asterisk:asterisk "$LOCAL_DIR" 2>/dev/null || chown root:root "$LOCAL_DIR"
 chmod 755 "$LOCAL_DIR"
@@ -230,8 +230,8 @@ fi
 chmod +x "$PLAY_SCRIPT" "$CONVERT_SCRIPT" 2>/dev/null || true
 echo "Verified: Both scripts are executable."
 
-# STEP 9. Backup old link.php and install new link.php from repo
-echo_step "9. Installing new link.php from repository (backup created)"
+# STEP 10. Backup old link.php and install new link.php from repo
+echo_step "10. Installing new link.php from repository (backup created)"
 if [[ -f "$LINK_PHP" ]]; then
     cp "$LINK_PHP" "${LINK_PHP}.bak"
     echo "Backup created: $LINK_PHP.bak"
@@ -242,8 +242,8 @@ chown www-data:www-data "$LINK_PHP"
 chmod 644 "$LINK_PHP"
 echo "New link.php installed successfully."
 
-# STEP 9.5 Install custom index.html for Allmon3 web root
-echo_step "9.5 Installing custom index.html for Allmon3 (/usr/share/allmon3/)"
+# STEP 11 Install custom index.html for Allmon3 web root
+echo_step "11 Installing custom index.html for Allmon3 (/usr/share/allmon3/)"
 
 ALLMON_WEB_ROOT="/usr/share/allmon3"
 INDEX_FILE="$ALLMON_WEB_ROOT/index.html"
@@ -281,8 +281,8 @@ else
     echo "Spare copy $INDEX_SPARE already exists – skipping"
 fi
 
-# STEP 10. Create sudoers rule for www-data
-echo_step "10. Creating sudoers rule for www-data (/etc/sudoers.d/99-supermon-announcements)"
+# STEP 12. Create sudoers rule for www-data
+echo_step "12. Creating sudoers rule for www-data (/etc/sudoers.d/99-supermon-announcements)"
 SUDOERS_FILE="/etc/sudoers.d/99-supermon-announcements"
 if [[ -f "$SUDOERS_FILE" ]]; then
     echo "$SUDOERS_FILE already exists – skipping"
@@ -302,8 +302,8 @@ EOF
     echo "Sudoers file created successfully."
 fi
 
-# STEP 11. Install Piper TTS 1.2.0 ARM64
-echo_step "11. Installing Piper TTS 1.2.0 ARM64"
+# STEP 13. Install Piper TTS 1.2.0 ARM64
+echo_step "13. Installing Piper TTS 1.2.0 ARM64"
 if [[ -f "/opt/piper/bin/piper" && -f "/opt/piper/voices/en_US-lessac-medium.onnx" ]]; then
     echo "Piper and voice model already installed – skipping"
 else
@@ -321,8 +321,8 @@ else
     echo "Piper installed successfully."
 fi
 
-# STEP 12. Download piper_generate.php and piper_prompt_tts.sh
-echo_step "12. Downloading piper_prompt_tts.sh"
+# STEP 14. Download piper_generate.php and piper_prompt_tts.sh
+echo_step "14. Downloading piper_prompt_tts.sh"
 
 
 if [[ -f "/usr/local/bin/piper_prompt_tts.sh" ]]; then
@@ -335,15 +335,15 @@ else
     echo "piper_prompt_tts.sh downloaded and made executable."
 fi
 
-# STEP 13. Test Piper installation
-echo_step "13. Testing Piper installation"
+# STEP 15. Test Piper installation
+echo_step "15. Testing Piper installation"
 /opt/piper/bin/piper/piper --version
 echo "This is a test of Piper TTS on node $(hostname)" | \
 /opt/piper/bin/piper/piper --model /opt/piper/voices/en_US-lessac-medium.onnx --output_file /mp3/piper_test.wav
 ls -l /mp3/piper_test.wav
 
-# STEP 14. Final verification
-echo_step "14. Setup complete – verification"
+# STEP 16. Final verification
+echo_step "16. Setup complete – verification"
 echo "I hope you get a lot of use from this"
 echo "Log into Supermon or Allmon3 → Announcements Manager should now appear at the bottom."
 echo "73 — N5AD"

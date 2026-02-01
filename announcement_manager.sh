@@ -85,6 +85,12 @@ mkdir -p "$TARGET_DIR"
 cp -v "$TEMP_CLONE"/*.{php,inc} "$TARGET_DIR"/ 2>/dev/null || warn "No .php/.inc files found"
 rm -rf "$TEMP_CLONE"
 
+# STEP 4.5 Copy files to allmon/custom directory
+echo step "4.5 copying files to $ALLMON_DIR
+mkdir -p "$ALLMON_DIR"
+sudo mv /var/www/html/supermon/custom/allmon-announcement.inc /usr/share/allmon3/custom/allmon-announcement.inc
+
+
 # STEP 5. Create /mp3 dir + permissions
 echo_step "5. Creating /mp3 directory"
 mkdir -p "$MP3_DIR"
@@ -117,6 +123,33 @@ echo_step "8. Installing prerequisite scripts in $LOCAL_DIR"
 mkdir -p "$LOCAL_DIR"
 chown asterisk:asterisk "$LOCAL_DIR" 2>/dev/null || chown root:root "$LOCAL_DIR"
 chmod 755 "$LOCAL_DIR"
+
+# ----- playglobal.sh -----
+GLOBAL_SCRIPT="$LOCAL_DIR/playglobal.sh"
+if [[ ! -f "$GLOBAL_SCRIPT" ]]; then
+    echo "Creating $GLOBAL_SCRIPT (missing)"
+    cat > "$GLOBAL_SCRIPT" << EOF
+#!/bin/bash
+#
+# playglobal.sh – Play an audio file over an AllStarLink v3 node (Debian 12)
+NODE="$NODE_NUMBER"
+if [ "\$EUID" -ne 0 ]; then
+    echo "This script must be run with sudo or as root."
+    exit 1
+fi
+if [ -z "\$1" ]; then
+    echo "Usage: \$0 <audio_file_without_extension>"
+    exit 1
+fi
+/usr/sbin/asterisk -rx "rpt playback \${NODE} \$1"
+EOF
+    chmod +x "$GLOBAL_SCRIPT"
+    chown asterisk:asterisk "$GLOBAL_SCRIPT" 2>/dev/null || chown root:root "$GLOBAL_SCRIPT"
+    chmod 755 "$GLOBALSCRIPT"
+    echo "Created $GLOBAL_SCRIPT with node number: $NODE_NUMBER"
+else
+    echo "$GLOBAL_SCRIPT already exists – skipping"
+fi
 
 # ----- playaudio.sh -----
 PLAY_SCRIPT="$LOCAL_DIR/playaudio.sh"
@@ -209,6 +242,7 @@ www-data ALL=(root) NOPASSWD: /etc/asterisk/local/audio_convert.sh
 www-data ALL=(ALL) NOPASSWD: /bin/cp, /bin/chown, /bin/chmod
 www-data ALL=(root) NOPASSWD: /usr/local/bin/piper_prompt_tts.sh
 www-data ALL=(root) NOPASSWD: /bin/rm /usr/local/share/asterisk/sounds/announcements/*.ul
+www-data ALL=(ALL) NOPASSWD: /etc/asterisk/local/playglobal.sh
 EOF
     chmod 0440 "$SUDOERS_FILE"
     chown root:root "$SUDOERS_FILE"

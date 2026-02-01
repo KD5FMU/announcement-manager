@@ -75,7 +75,7 @@ $(document).ready(function() {
     }
     loadULDropdown();
 
-    // ====== Cron List with Separated Time Columns & Toggle (your working version) ======
+    // ====== Cron List with Separated Time Columns & Toggle ======
     function loadCronList() {
         $.getJSON("/supermon/custom/list_cron.php", function(crons) {
             let table = $("#cron_table tbody");
@@ -194,34 +194,54 @@ $(document).ready(function() {
         });
     });
 
-    // Local Play for MP3/WAV
+    // Local Play for MP3/WAV — uses source: "mp3"
     $("#local_play_mp3").click(function() {
         let f = $("#mp3_select").val();
-        if (!f) { 
-            alert("Select an MP3/WAV file first"); 
-            return; 
+        if (!f) {
+            alert("Select an MP3/WAV file first");
+            return;
         }
-        $.post("/supermon/custom/run_announcement.php", {file:f}, function(r){ 
-            alert(r); 
+        $.post("/supermon/custom/run_announcement.php", { 
+            file: f,
+            source: "mp3"   // Tells PHP to use /mp3/ directory
+        }, function(r){
+            alert(r);
         }).fail(function() {
             alert("Local play request failed - check server logs or permissions.");
         });
     });
 
-    // Global Play for MP3/WAV with warning
+    // Global Play for MP3/WAV — uses source: "mp3"
     $("#global_play_mp3").click(function() {
         let f = $("#mp3_select").val();
-        if (!f) { 
-            alert("Select an MP3/WAV file first"); 
-            return; 
+        if (!f) {
+            alert("Select an MP3/WAV file first");
+            return;
         }
         if (!confirm("WARNING: This announcement will play on this node AND all currently linked nodes.\n\nContinue?")) {
             return;
         }
-        $.post("/supermon/custom/globalplay.php", {file: f}, function(r){ 
-            alert(r); 
+        $.post("/supermon/custom/globalplay.php", { 
+            file: f,
+            source: "mp3"   // Tells globalplay.php to use /mp3/
+        }, function(r){
+            alert(r);
         }).fail(function() {
             alert("Global play request failed - check server logs or permissions.");
+        });
+    });
+
+    // Play Now for UL files — uses source: "ul"
+    $("#run_ul").click(function() {
+        let f = $("#ul_select").val();
+        if (!f) { alert("Select announcement first"); return; }
+        $.post("/supermon/custom/run_announcement.php", { 
+            file: f,
+            source: "ul"    // Tells PHP to use announcements/ subdirectory
+        }, function(r){ 
+            alert(r); 
+        }).fail(function() {
+            alert("Play Now failed - check server logs or permissions.");
         });
     });
 
@@ -233,13 +253,6 @@ $(document).ready(function() {
             alert(r);
             loadULDropdown();
         });
-    });
-
-    // Play Now (local node only) - for .ul files
-    $("#run_ul").click(function() {
-        let f = $("#ul_select").val();
-        if (!f) { alert("Select announcement first"); return; }
-        $.post("/supermon/custom/run_announcement.php", {file:f}, function(r){ alert(r); });
     });
 
     // Generate TTS
@@ -258,7 +271,6 @@ $(document).ready(function() {
             }
         });
     });
-
 });
 </script>
 
@@ -270,33 +282,27 @@ $(document).ready(function() {
     .submit { padding:6px 12px; margin:4px; }
     #local_play_mp3:hover { opacity:0.85; }
     #global_play_mp3:hover { opacity:0.85; }
-
     /* Grid appearance for cron table - strong cell separation */
     #cron_table th, #cron_table td {
-        border: 1px solid #666;      /* Visible border around EVERY cell */
-        padding: 8px 10px;           /* Space inside cells for clear separation */
+        border: 1px solid #666;
+        padding: 8px 10px;
         text-align: center;
     }
-
     #cron_table tbody tr:nth-child(even) {
-        background-color: #f9f9f9;   /* Light zebra stripe */
+        background-color: #f9f9f9;
     }
-
     #cron_table tbody tr:hover {
-        background-color: #f0f8ff;   /* Subtle row hover */
+        background-color: #f0f8ff;
     }
-
-    /* Prevent wrapping in narrow columns */
     #cron_table td {
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
         max-width: 140px;
     }
-
-    /* Actions column can wrap buttons */
     #cron_table td:last-child {
         white-space: normal;
         max-width: none;
     }
 </style>
+<?php } ?>

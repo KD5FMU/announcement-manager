@@ -345,5 +345,5 @@ ls -l /mp3/piper_test.wav
 # STEP 14. Final verification
 echo_step "14. Setup complete – verification"
 echo "I hope you get a lot of use from this"
-echo "Log into Supermon → Announcements Manager should now appear at the bottom."
+echo "Log into Supermon or Allmon3 → Announcements Manager should now appear at the bottom."
 echo "73 — N5AD"

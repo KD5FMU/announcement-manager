@@ -506,197 +506,131 @@
 <!-- Load Announcements Manager after successful login -->
 
 
+<!-- Load Announcements Manager reliably on every page load / refresh -->
+<!-- Load Announcements Manager ONLY when logged in, remove on logout -->
+<!-- Load Announcements Manager reliably, positioned correctly at bottom of dashboard -->
+<!-- Load Announcements Manager reliably, positioned correctly -->
+<!-- Load Announcements Manager only when logged in, remove immediately on logout -->
 <script>
-
-
 document.addEventListener('DOMContentLoaded', function() {
-
-
-    // Hook into Allmon3's doLogin function (or create if not exists)
-
-
-    const originalDoLogin = window.doLogin || function(){ return Promise.resolve(); };
-
-
-
-    window.doLogin = async function(...args) {
-
-
-        const result = await originalDoLogin.apply(this, args);
-
-
-
-        // Check if login appears successful (common indicators in Allmon3)
-
-
-        const dashboard = document.getElementById('asl-statmon-dashboard-area');
-
-
-        const isLoggedIn = 
-
-
-            (dashboard && dashboard.innerHTML.trim() !== '') ||
-
-
-            localStorage.getItem('loggedIn') === 'true' ||
-
-
-            document.querySelector('#login-out-region')?.innerHTML.includes('Logout');
-
-
-
-        if (isLoggedIn) {
-
-
-            let container = document.getElementById('announcements-container');
-
-
-            if (!container) {
-
-
-                container = document.createElement('div');
-
-
-                container.id = 'announcements-container';
-
-
-                container.style.marginTop = '40px';
-
-
-                container.style.padding = '20px 0';
-
-
-                container.style.borderTop = '2px solid #dee2e6';
-
-
-                dashboard.appendChild(container);
-
-
-            }
-
-
-
-            // Fetch and inject announcement.inc
-
-
-            fetch('custom/allmon-announcement.inc')
-
-
-                .then(response => {
-
-
-                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-
-
-                    return response.text();
-
-
-                })
-
-
-                .then(html => {
-
-
-                    // Remove PHP logic parts (since we're client-side)
-
-
-                    let cleaned = html
-
-
-                        .replace(/<\?php\s*if\s*\([^)]*\)\s*\{[\s\S]*?\}\s*\?>/gs, '')
-
-
-                        .replace(/<\?php[\s\S]*?\?>/gs, '')
-
-
-                        .trim();
-
-
-
-                    container.innerHTML = cleaned;
-
-
-
-                    // Execute any <script> blocks inside the loaded content
-
-
-                    const scripts = container.getElementsByTagName('script');
-
-
-                    Array.from(scripts).forEach(oldScript => {
-
-
-                        const newScript = document.createElement('script');
-
-
-                        Array.from(oldScript.attributes).forEach(attr => {
-
-
-                            newScript.setAttribute(attr.name, attr.value);
-
-
-                        });
-
-
-                        newScript.appendChild(document.createTextNode(oldScript.innerHTML));
-
-
-                        oldScript.parentNode.replaceChild(newScript, oldScript);
-
-
-                    });
-
-
-
-                    console.log('Announcements Manager loaded successfully');
-
-
-                })
-
-
-                .catch(err => {
-
-
-                    console.error('Failed to load Announcements Manager:', err);
-
-
-                    container.innerHTML = `
-
-
-                        <div class="alert alert-warning mt-4">
-
-
-                            <strong>Announcements Manager failed to load:</strong><br>
-
-
-                            ${err.message}<br>
-
-
-                            Check: file exists at <code>custom/announcement.inc</code> and permissions are correct.
-
-
-                        </div>`;
-
-
+    console.log('[Announce] Page loaded - starting');
+
+    let container = null;
+    let isLoggedIn = false;
+    let pollInterval = null;
+
+    function createContainer() {
+        if (container) return container;
+
+        container = document.createElement('div');
+        container.id = 'announcements-container';
+        container.style.marginTop = '40px';
+        container.style.padding = '20px 0';
+        container.style.borderTop = '2px solid #dee2e6';
+
+        let dashboard = document.getElementById('asl-statmon-dashboard-area');
+        if (!dashboard) {
+            dashboard = document.querySelector('main') || document.body;
+        }
+        dashboard.appendChild(container);
+        console.log('[Announce] Container created');
+        return container;
+    }
+
+    function loadAnnouncements() {
+        if (!isLoggedIn) return;
+
+        console.log('[Announce] Loading manager');
+        const cont = createContainer();
+        if (!cont) return;
+
+        cont.innerHTML = '<div class="alert alert-info">Loading Announcements Manager...</div>';
+
+        fetch('custom/allmon-announcement.inc', { cache: 'no-cache' })
+            .then(response => {
+                if (!response.ok) throw new Error(`Fetch failed: ${response.status}`);
+                return response.text();
+            })
+            .then(html => {
+                let cleaned = html
+                    .replace(/<\?php\s*if\s*\([^)]*\)\s*\{[\s\S]*?\}\s*\?>/gs, '')
+                    .replace(/<\?php[\s\S]*?\?>/gs, '')
+                    .trim();
+
+                cont.innerHTML = cleaned;
+
+                const scripts = cont.getElementsByTagName('script');
+                Array.from(scripts).forEach(oldScript => {
+                    const newScript = document.createElement('script');
+                    Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
+                    newScript.text = oldScript.innerHTML;
+                    oldScript.parentNode.replaceChild(newScript, oldScript);
                 });
 
+                console.log('[Announce] Loaded successfully');
+            })
+            .catch(err => {
+                console.error('[Announce] Load error:', err);
+                cont.innerHTML = `<div class="alert alert-danger">Failed: ${err.message}</div>`;
+            });
+    }
 
+    function removeAnnouncements() {
+        if (container) {
+            container.remove();
+            container = null;
+            console.log('[Announce] Removed (logout detected)');
         }
+    }
 
+    // Reliable logout/login detection
+    function updateLoginState() {
+        const hasLogout = !!document.querySelector('#login-out-region [onclick*="doLogout"], #login-out-region [data-bs-target="#logoutModal"], .btn-logout');
+        const loginModalOpen = document.getElementById('loginModal')?.classList.contains('show');
+        const dashboardVisible = document.getElementById('asl-statmon-dashboard-area')?.offsetParent !== null;
 
+        const nowLoggedIn = hasLogout && !loginModalOpen && dashboardVisible;
 
+        console.log('[Announce] State check:', { hasLogout, loginModalOpen, dashboardVisible, nowLoggedIn });
+
+        if (nowLoggedIn !== isLoggedIn) {
+            isLoggedIn = nowLoggedIn;
+            if (isLoggedIn) {
+                loadAnnouncements();
+            } else {
+                removeAnnouncements();
+            }
+        }
+    }
+
+    // Hook doLogin/doLogout as fallback
+    const originalDoLogin = window.doLogin || function(){ return Promise.resolve(); };
+    window.doLogin = async function(...args) {
+        const result = await originalDoLogin.apply(this, args);
+        isLoggedIn = true;
+        loadAnnouncements();
         return result;
-
-
     };
 
+    const originalDoLogout = window.doLogout || function(){};
+    window.doLogout = function(...args) {
+        originalDoLogout.apply(this, args);
+        isLoggedIn = false;
+        removeAnnouncements();
+    };
 
+    // Poll for state changes (every 2 seconds) - catches Allmon3 partial UI updates
+    pollInterval = setInterval(updateLoginState, 2000);
+
+    // Initial check
+    updateLoginState();
+
+    // Cleanup on page unload
+    window.addEventListener('beforeunload', () => {
+        if (pollInterval) clearInterval(pollInterval);
+    });
 });
-
-
 </script>
-
-
 
 </body>
 

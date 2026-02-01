@@ -11,7 +11,7 @@
 <h3>Generate Announcement with Piper TTS</h3>
 <textarea id="tts_text" rows="4" cols="60" placeholder="Enter the text you want to convert to speech..."></textarea>
 <br><br>
-<label for="tts_filename">Filename must be one word, no spaces or characters (without extension):</label>
+<label for="tts_filename">Letters, numbers, hyphens and underscores accepted. Don't use extensions:</label>
 <input type="text" id="tts_filename" placeholder="e.g., myannounce" style="width: 200px;">
 <br><br>
 <button id="generate_tts" class="submit">Generate WAV File</button>

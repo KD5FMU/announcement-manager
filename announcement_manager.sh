@@ -85,10 +85,22 @@ mkdir -p "$TARGET_DIR"
 cp -v "$TEMP_CLONE"/*.{php,inc} "$TARGET_DIR"/ 2>/dev/null || warn "No .php/.inc files found"
 rm -rf "$TEMP_CLONE"
 
-# STEP 4.5 Copy files to allmon/custom directory
-echo step "4.5 copying files to $ALLMON_DIR
+# STEP 4.5 Copy announcement include to Allmon3 custom directory (copy, not move)
+echo_step "4.5 Copying announcement include to Allmon3 custom dir ($ALLMON_DIR)"
 mkdir -p "$ALLMON_DIR"
-sudo mv /var/www/html/supermon/custom/allmon-announcement.inc /usr/share/allmon3/custom/allmon-announcement.inc
+
+# Source file after Supermon copy
+SOURCE_INC="$TARGET_DIR/allmon-announcement.inc"
+
+if [[ -f "$SOURCE_INC" ]]; then
+    # Copy (preserves Supermon version)
+    cp -v "$SOURCE_INC" "$ALLMON_DIR/allmon-announcement.inc"
+    chown www-data:www-data "$ALLMON_DIR/allmon-announcement.inc"
+    chmod 644 "$ALLMON_DIR/allmon-announcement.inc"
+    echo "Copied $SOURCE_INC → $ALLMON_DIR"
+else
+    warn "Source file $SOURCE_INC not found – skipping Allmon3 copy (check repo contents)"
+fi
 
 
 # STEP 5. Create /mp3 dir + permissions

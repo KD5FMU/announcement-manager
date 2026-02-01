@@ -45,6 +45,7 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
                 <th style="padding:8px; border:1px solid #666; text-align:center;">DOW</th>
                 <th style="padding:8px; border:1px solid #666; text-align:center;">File</th>
                 <th style="padding:8px; border:1px solid #666; text-align:center;">Description</th>
+                <th style="padding:8px; border:1px solid #666; text-align:cener;">Scope</th>
                 <th style="padding:8px; border:1px solid #666; text-align:center;">Enabled</th>
                 <th style="padding:8px; border:1px solid #666; text-align:center;">Actions</th>
             </tr>

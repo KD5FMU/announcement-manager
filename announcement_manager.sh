@@ -97,7 +97,7 @@ SOURCE_INC="$TARGET_DIR/allmon-announcement.inc"
 if [[ -f "$SOURCE_INC" ]]; then
     # Copy (preserves Supermon version)
     cp -v "$SOURCE_INC" "$ALLMON_DIR/allmon-announcement.inc"
-    chown www-data:www-data "$ALLMON_DIR/allmon-announcement.inc"
+    chown root:root "$ALLMON_DIR/allmon-announcement.inc"
     chmod 644 "$ALLMON_DIR/allmon-announcement.inc"
     echo "Copied $SOURCE_INC → $ALLMON_DIR"
 else

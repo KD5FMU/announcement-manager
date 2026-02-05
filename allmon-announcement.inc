@@ -19,7 +19,7 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
 
 <h3>Generate Announcement with Piper TTS</h3>
 
-<textarea id="tts_text" rows="4" cols="60" placeholder="Enter the text you want to convert to speech..."></textarea><br><br>
+<textarea id="tts_text" rows="4" cols="60" placeholder="Enter the text you want to convert to speech. Commas and periods are accepted, no other punctuation is allowed..."></textarea><br><br>
 
 <label for="tts_filename">Filename (one word, letters/numbers/hyphen/underscore only, no extension):</label><br>
 

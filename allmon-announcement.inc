@@ -234,7 +234,8 @@ $(document).ready(function() {
                             alert("Editing is not available for advanced/nth-week scheduled cron jobs.\n\n" +
                               "These jobs use special logic (e.g. '2nd Monday of the month').\n" +
                               "To change this job, please delete it and create a new one.");
-                        }
+return;
+}
                         let p = c.time.split(" ");
                         let min   = prompt("Minute:", p[0]); if (min === null) return;
                         let hour  = prompt("Hour:",   p[1]); if (hour === null) return;

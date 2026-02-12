@@ -288,9 +288,6 @@ echo "link.php permissions verified."
 # ────────────────────────────────────────────────
 echo_step "10.1. Applying your preferred IPv4 LAN detection"
 
-# Backup
-[ -f "${LINK_PHP}.ipv4.bak" ] || cp -v "$LINK_PHP" "${LINK_PHP}.ipv4.bak"
-
 # Remove old if (empty($WANONLY)) block
 sed -i '/if (empty(\$WANONLY)) {/,/}/d' "$LINK_PHP"
 

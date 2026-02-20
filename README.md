@@ -46,7 +46,7 @@ cd /etc/asterisk/local
 Then lets download the installer script
 
 ```
-sudo wget https://raw.githubusercontent.com/N5AD/announcement-manager/refs/heads/main/announcement_manager.sh
+sudo wget https://raw.githubusercontent.com/n5ad/announcement-manager/refs/heads/main/announcement_manager.sh
 ```
 Then lets run the script using
 ```

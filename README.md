@@ -14,7 +14,7 @@ So if you do not have Supermon 7.4+ installed, you will need to install apache2 
 sudo apt update && sudo apt upgrade -y
 sudo apt install apache2 libapache2-mod-php php php-common -y
 sudo systemctl enable --now apache2
-sudo systemctl status apache2   # quick check
+
 ```
 
 

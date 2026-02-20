@@ -1,5 +1,6 @@
 # Supermon-7.4 AND Allmon3 announcement-creation-and-management-of-cron
 Supermon 7.4+ and Allmon3 announcement creation and management of cron entries<br>
+# Schedule announcements for local play or global across ALL CONNECTED NODES
 
 This works on rPi as well as dell wyse thin clients. if it has x86/amd or aarch or ARM64 architecture it should work. please let me know if it doesn't.
 <br>

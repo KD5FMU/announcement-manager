@@ -52,6 +52,7 @@
             <th>Month</th>
             <th>Day of Week</th>
             <th>Name of File</th>
+            <th>Scope</th>
             <th>Description</th>
             <th>Enabled</th>
             <th>Actions</th>
@@ -257,6 +258,7 @@ $("#install_announcement").click(function() {
                 row.append($("<td>").text(parts[3] || "*"));
                 row.append($("<td>").text(parts[4] || "*"));
                 row.append($("<td>").text(c.file));
+                row.append($("<td>").text(c.scope ? c.scope.toUpperCase() : "—"));
                 row.append($("<td>").text(c.desc || ""));
                 let isEnabled = !c.raw.startsWith('#');
 

@@ -172,16 +172,7 @@
         </nav>
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
             <div id="asl-statmon-dashboard-area"></div>
-
-            <!-- Announcement Manager section header – appears only after login -->
-            <div id="announcements-header" style="display:none; margin:40px 0 20px; padding:15px; background:#f8f9fa; border-radius:6px; border:1px solid #dee2e6;">
-                <h3 style="margin:0 0 8px 0;">Announcement Manager</h3>
-                <p style="margin:0; color:#555;">
-                    Schedule announcements • Choose <strong>local</strong> (this node only) or <strong>global</strong> (this node + all linked nodes)
-                </p>
-            </div>
-
-            <!-- Announcements Manager will be appended here after login -->
+            <!-- Announcements Manager content (including header) will be appended here after login -->
         </main>
         <footer class="col-md-9 ms-sm-auto col-lg-10 px-md-4 my-2 mx-3">
             <hr>
@@ -214,12 +205,25 @@ document.addEventListener('DOMContentLoaded', function() {
         container.style.marginTop = '40px';
         container.style.padding = '20px 0';
         container.style.borderTop = '2px solid #dee2e6';
+
         let dashboard = document.getElementById('asl-statmon-dashboard-area');
         if (!dashboard) {
             dashboard = document.querySelector('main') || document.body;
         }
         dashboard.appendChild(container);
         console.log('[Announce] Container created');
+
+        // Insert header at the top of the announcement section
+        const headerHTML = `
+            <div id="announcements-header" style="margin-bottom:30px; padding:15px; background:#f8f9fa; border-radius:6px; border:1px solid #dee2e6;">
+                <h3 style="margin:0 0 12px 0; font-size:1.6rem;">Announcement Manager</h3>
+                <p style="margin:0; color:#555; font-size:1.05rem;">
+                    Schedule announcements • Choose <strong>local</strong> (this node only) or <strong>global</strong> (this node + all linked nodes)
+                </p>
+            </div>
+        `;
+        container.insertAdjacentHTML('afterbegin', headerHTML);
+
         return container;
     }
 
@@ -227,13 +231,13 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!isLoggedIn) return;
         console.log('[Announce] Loading manager');
 
-        // Show header when loading announcements
-        const header = document.getElementById('announcements-header');
-        if (header) header.style.display = 'block';
-
         const cont = createContainer();
         if (!cont) return;
-        cont.innerHTML = '<div class="alert alert-info">Loading Announcements Manager...</div>';
+
+        const loading = document.createElement('div');
+        loading.className = 'alert alert-info';
+        loading.textContent = 'Loading Announcements Manager...';
+        cont.appendChild(loading);
 
         fetch('custom/allmon-announcement.inc', { cache: 'no-cache' })
             .then(response => {
@@ -241,11 +245,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 return response.text();
             })
             .then(html => {
+                loading.remove();
+
                 let cleaned = html
                     .replace(/<\?php\s*if\s*\([^)]*\)\s*\{[\s\S]*?\}\s*\?>/gs, '')
                     .replace(/<\?php[\s\S]*?\?>/gs, '')
                     .trim();
-                cont.innerHTML = cleaned;
+
+                cont.insertAdjacentHTML('beforeend', cleaned);
+
                 const scripts = cont.getElementsByTagName('script');
                 Array.from(scripts).forEach(oldScript => {
                     const newScript = document.createElement('script');
@@ -253,11 +261,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     newScript.appendChild(document.createTextNode(oldScript.innerHTML));
                     oldScript.parentNode.replaceChild(newScript, oldScript);
                 });
+
                 console.log('[Announce] Loaded successfully');
             })
             .catch(err => {
                 console.error('[Announce] Load error:', err);
-                cont.innerHTML = `<div class="alert alert-danger">Failed: ${err.message}</div>`;
+                cont.innerHTML += `<div class="alert alert-danger">Failed: ${err.message}</div>`;
             });
     }
 
@@ -267,18 +276,16 @@ document.addEventListener('DOMContentLoaded', function() {
             container = null;
             console.log('[Announce] Removed (logout detected)');
         }
-        // Hide header on logout
-        const header = document.getElementById('announcements-header');
-        if (header) header.style.display = 'none';
     }
 
-    // Reliable logout/login detection
     function updateLoginState() {
         const hasLogout = !!document.querySelector('#login-out-region [onclick*="doLogout"], #login-out-region [data-bs-target="#logoutModal"], .btn-logout');
         const loginModalOpen = document.getElementById('loginModal')?.classList.contains('show');
         const dashboardVisible = document.getElementById('asl-statmon-dashboard-area')?.offsetParent !== null;
         const nowLoggedIn = hasLogout && !loginModalOpen && dashboardVisible;
+
         console.log('[Announce] State check:', { hasLogout, loginModalOpen, dashboardVisible, nowLoggedIn });
+
         if (nowLoggedIn !== isLoggedIn) {
             isLoggedIn = nowLoggedIn;
             if (isLoggedIn) {
@@ -289,7 +296,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Hook doLogin/doLogout as fallback
     const originalDoLogin = window.doLogin || function(){ return Promise.resolve(); };
     window.doLogin = async function(...args) {
         const result = await originalDoLogin.apply(this, args);
@@ -305,12 +311,9 @@ document.addEventListener('DOMContentLoaded', function() {
         removeAnnouncements();
     };
 
-    // Poll for state changes (every 2 seconds)
     pollInterval = setInterval(updateLoginState, 2000);
-    // Initial check
     updateLoginState();
 
-    // Cleanup on page unload
     window.addEventListener('beforeunload', () => {
         if (pollInterval) clearInterval(pollInterval);
     });

@@ -104,7 +104,7 @@ sudo rm -f /var/www/html/supermon/custom/*.inc
 echo "Restoring Allmon3 dashboard"
 sudo rm /usr/share/allmon3/index.html
 sudo mv /usr/share/allmon3/index.html.orig index.html
-
+sudo rm /usr/share/allmon3/custom/allmon-announcement.inc
 
 echo ""
 

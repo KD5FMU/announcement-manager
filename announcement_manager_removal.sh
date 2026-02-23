@@ -101,10 +101,9 @@ sudo rm -f /var/www/html/supermon/custom/*.php
 sudo rm -f /var/www/html/supermon/custom/*.inc
 
 #8. Restore Allmon3 index.html
-echo "Restoring Allmon3 dashboard"
-sudo rm /usr/share/allmon3/index.html
+echo "Restoring Allmon3 Dashboard"
 sudo cp /usr/share/allmon3/index.html.orig index.html
-sudo rm /usr/share/allmon3/custom/allmon-announcement.inc
+sudo rm -f /usr/share/allmon3/custom/allmon-announcement.inc
 
 echo ""
 

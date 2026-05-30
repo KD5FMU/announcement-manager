@@ -37,7 +37,7 @@ if ($source === 'mp3') {
 }
 
 if ($scope === 'global') {
-    $play_script = "/etc/asterisk/local/globalplay.sh";  // or whatever your global script is
+    $play_script = "/etc/asterisk/local/playglobal.sh";  // or whatever your global script is
     $echo_msg = "Playing '$base_name' **GLOBALLY** now.";
 } else {
     $play_script = "/etc/asterisk/local/playaudio.sh";

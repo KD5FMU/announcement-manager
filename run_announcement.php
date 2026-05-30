@@ -8,7 +8,6 @@
  * Original by N5AD - updated to support MP3/WAV directly
  */
 
-// Only accept POST requests
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
     echo "Method not allowed.";
@@ -20,40 +19,45 @@ if (empty($_POST['file'])) {
     exit;
 }
 
-// Sanitize input - just the base filename
+// Sanitize
 $base = basename($_POST['file']);
-$base_name = pathinfo($base, PATHINFO_FILENAME); // strip extension
+$base_name = pathinfo($base, PATHINFO_FILENAME);
 
-// Determine source directory based on POST param
-$source = $_POST['source'] ?? 'ul'; // default to ul
+// Get scope (default to local for safety)
+$scope = strtolower($_POST['scope'] ?? 'local');
+$source = $_POST['source'] ?? 'ul';
 
+// Determine playback path
 if ($source === 'mp3') {
-    // Play from /mp3/ (raw MP3/WAV)
     $play_path = "/mp3/" . $base_name;
-    $echo_msg  = "Playing '$base_name' (MP3/WAV from /mp3/) locally now.";
+    $type_desc = "MP3/WAV";
 } else {
-    // Default: play from announcements/ (for .ul files)
     $play_path = "announcements/" . $base_name;
-    $echo_msg  = "Playing '$base_name' (from announcements/) locally now.";
+    $type_desc = "Announcement";
 }
 
-// Path to play script (local playback)
-$play_script = "/etc/asterisk/local/playaudio.sh";
+if ($scope === 'global') {
+    $play_script = "/etc/asterisk/local/globalplay.sh";  // or whatever your global script is
+    $echo_msg = "Playing '$base_name' **GLOBALLY** now.";
+} else {
+    $play_script = "/etc/asterisk/local/playaudio.sh";
+    $echo_msg = "Playing '$base_name' locally now.";
+}
 
-// Verify script exists and is executable
+// Security check
 if (!is_executable($play_script)) {
-    echo "playaudio.sh not found or not executable at $play_script.";
+    echo "Playback script not found or not executable: $play_script";
     exit;
 }
 
-// Build and execute command
+// Execute
 $cmd = escapeshellcmd("sudo $play_script " . escapeshellarg($play_path));
 exec($cmd . " 2>&1", $output, $retval);
 
 if ($retval === 0) {
     echo $echo_msg;
 } else {
-    $error_msg = implode("\n", $output);
-    echo "Failed to play '$base_name'.\nCode: $retval\nOutput: $error_msg";
+    $error = implode("\n", $output);
+    echo "Failed to play '$base_name'.\nCode: $retval\nOutput: $error";
 }
 ?>

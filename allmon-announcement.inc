@@ -184,7 +184,7 @@ $(document).ready(function () {
 
             },
 
-            error: function() { $("#upload_status").text("âŒ Upload failed.").css("color", "red"); }
+            error: function() { $("#upload_status").text("❌  Upload failed.").css("color", "red"); }
 
         });
 
@@ -398,7 +398,7 @@ $(document).ready(function () {
 
         let scope = (scopeInput && scopeInput.trim().toLowerCase() === "global") ? "global" : "local";
 
-        if (scope === "global" && !confirm("GLOBAL â†’ will play on ALL connected nodes. Continue?")) return;
+        if (scope === "global" && !confirm("GLOBAL → will play on ALL connected nodes. Continue?")) return;
 
 
         let modeChoice = prompt("Play Mode?\n\npolite = Wait for clear channel (recommended)\npriority = Play immediately", "polite");

@@ -87,38 +87,56 @@ mkdir -p "$TARGET_DIR"
 cp -v "$TEMP_CLONE"/*.{php,inc} "$TARGET_DIR"/ 2>/dev/null || warn "No .php/.inc files found"
 rm -rf "$TEMP_CLONE"
 
-# STEP 5. Copy announcement include + frame to Allmon3 custom directory
-echo_step "5. Copying announcement files to Allmon3 custom dir ($ALLMON_DIR)"
+# STEP 5. Copy announcement files + config to Allmon3
+echo_step "5. Copying announcement files and config to Allmon3"
+
 mkdir -p "$ALLMON_DIR"
-# Source files after Supermon copy
-SOURCE_INC="$TARGET_DIR/allmon-announcement.inc"
-SOURCE_FRAME="$TARGET_DIR/allmon-announcement-frame.php"
+mkdir -p "$ALLMON_DIR/custom"
 
 copied=0
+
+# Main announcement files
+SOURCE_INC="$TARGET_DIR/announcement-frame.inc"
+SOURCE_FRAME="$TARGET_DIR/supermon-announcement-frame.php"
+
 if [[ -f "$SOURCE_INC" ]]; then
-    cp -v "$SOURCE_INC" "$ALLMON_DIR/allmon-announcement.inc"
-    chown root:root "$ALLMON_DIR/allmon-announcement.inc"
-    chmod 644 "$ALLMON_DIR/allmon-announcement.inc"
-    echo "Copied $SOURCE_INC → $ALLMON_DIR"
+    cp -v "$SOURCE_INC" "$ALLMON_DIR/custom/announcement-frame.inc"
+    chown root:root "$ALLMON_DIR/custom/announcement-frame.inc"
+    chmod 644 "$ALLMON_DIR/custom/announcement-frame.inc"
+    echo "Copied announcement-frame.inc"
     ((copied++))
-else
-    warn "Source file $SOURCE_INC not found – skipping Allmon3 .inc copy"
 fi
 
 if [[ -f "$SOURCE_FRAME" ]]; then
-    cp -v "$SOURCE_FRAME" "$ALLMON_DIR/allmon-announcement-frame.php"
-    chown root:root "$ALLMON_DIR/allmon-announcement-frame.php"
-    chmod 644 "$ALLMON_DIR/allmon-announcement-frame.php"
-    echo "Copied $SOURCE_FRAME → $ALLMON_DIR"
+    cp -v "$SOURCE_FRAME" "$ALLMON_DIR/custom/supermon-announcement-frame.php"
+    chown root:root "$ALLMON_DIR/custom/supermon-announcement-frame.php"
+    chmod 644 "$ALLMON_DIR/custom/supermon-announcement-frame.php"
+    echo "Copied supermon-announcement-frame.php"
     ((copied++))
-else
-    warn "Source file $SOURCE_FRAME not found – skipping Allmon3 frame copy"
+fi
+
+# New config files
+if [[ -f "$TARGET_DIR/custom.ini" ]]; then
+    cp -v "$TARGET_DIR/custom.ini" "/usr/share/allmon3/custom.ini"
+    chown root:root "/usr/share/allmon3/custom.ini"
+    chmod 644 "/usr/share/allmon3/custom.ini"
+    echo "Copied custom.ini to /usr/share/allmon3/"
+    ((copied++))
+fi
+
+if [[ -f "$TARGET_DIR/custom-config.php" ]]; then
+    cp -v "$TARGET_DIR/custom-config.php" "/usr/share/allmon3/custom/custom-config.php"
+    chown root:root "/usr/share/allmon3/custom/custom-config.php"
+    chmod 644 "/usr/share/allmon3/custom/custom-config.php"
+    echo "Copied custom-config.php to /usr/share/allmon3/custom/"
+    ((copied++))
 fi
 
 if [[ $copied -eq 0 ]]; then
-    warn "No announcement files were copied to Allmon3 custom dir (check repo contents)"
+    warn "No announcement files were copied to Allmon3 (check source directory)"
+else
+    echo "Successfully copied $copied file(s) for Allmon3"
 fi
-
 
 # STEP 6. Create /mp3 dir + permissions
 echo_step "6. Creating /mp3 directory"

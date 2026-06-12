@@ -102,7 +102,7 @@ sudo rm -f /var/www/html/supermon/custom/*.inc
 
 #8. Restore Allmon3 index.html
 echo "Restoring Allmon3 Dashboard"
-sudo cp /usr/share/allmon3/index.html.orig index.html
+sudo mv /usr/share/allmon3/index.html.orig index.html
 sudo rm -f /usr/share/allmon3/custom/allmon-announcement.inc
 
 echo ""
@@ -113,4 +113,4 @@ echo "All Announcements Manager and Piper TTS components have been removed."
 
 echo "You can now run a fresh install if desired."
 
-echo "73 â€” N5AD"
+echo "73  N5AD"

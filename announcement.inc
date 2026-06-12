@@ -56,7 +56,7 @@
     text-align: center;
 ">
     <h4 style="color:#7dd9a1; margin-top:0;">Upload Your Own MP3 / WAV Files</h4>
-    
+    <h6> "this upload will automatically convert mp3 files to wav for playback in ASL3"</h6>
     <div style="
         display: inline-flex; 
         align-items: center; 

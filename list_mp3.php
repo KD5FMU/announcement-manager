@@ -1,13 +1,8 @@
 <?php
 
-/**
-
- * list_mp3.php
-
- * Lists both .mp3 and .wav files in /mp3/ for the Announcements Manager
-
- * CREATED BY N5AD
-
+/*
+ * Updated June 12, 2026
+ * Modified by N5AD
  */
 
 

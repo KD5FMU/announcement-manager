@@ -1,8 +1,9 @@
 <?php
 
-// piper_generate.php - Generate .wav from text using Piper TTS
-
-// Now supports voice selection from dropdown
+/*
+ * Updated June 12, 2026
+ * Modified by N5AD
+ */
 
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {

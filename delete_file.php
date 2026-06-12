@@ -1,5 +1,8 @@
 <?php
-// delete_file.php - Delete MP3 or UL file
+/*
+ * Updated June 12, 2026
+ * Modified by N5AD
+ */
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);

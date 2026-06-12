@@ -1,11 +1,7 @@
 <?php
-/**
- * run_announcement.php
- * Plays a file immediately on the local AllStar node
- * Supports two directories:
- *   - announcements/ (for .ul files)
- *   - /mp3/ (for raw MP3/WAV files)
- * Original by N5AD - updated to support MP3/WAV directly
+/*
+ * Updated June 12, 2026
+ * Modified by N5AD
  */
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {

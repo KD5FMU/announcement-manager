@@ -1,23 +1,9 @@
 <?php
 
-/**
-
- * list_announcements.php
-
- *
-
- * Lists AllStar announcement cron jobs created via Supermon
-
- * Identified by comments beginning with:
-
- *   # Announcement:
-
- *
-
- * CREATED BY N5AD
-
+/*
+ * Updated June 12, 2026
+ * Modified by N5AD
  */
-
 
 header('Content-Type: application/json');
 

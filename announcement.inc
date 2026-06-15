@@ -1,7 +1,7 @@
 <?php
 // announcement.inc
 // Loaded only after Supermon login
-// Created by N5AD - Updated June 2026
+// Created by N5AD - Updated June 15, 2026
 ?>
 <?php if (isset($_SESSION['sm61loggedin']) && $_SESSION['sm61loggedin'] === true) { ?>
 <div id="announcement-manager" style="
@@ -23,15 +23,15 @@
         margin-bottom: 25px;
     ">
         <h3 style="color:#2980b9; margin-top:0;">Generate Announcement with Piper TTS</h3>
-        
-        <textarea id="tts_text" rows="4" cols="70" 
+       
+        <textarea id="tts_text" rows="4" cols="70"
             placeholder="Enter the text you want to convert to speech. Commas and periods are acceptable, no other punctuation..."></textarea>
         <br><br>
-        
+       
         <label for="tts_filename">Filename (letters, numbers, hyphens, underscores only):</label><br>
         <input type="text" id="tts_filename" placeholder="e.g., myannounce" style="width: 280px;">
         <br><br>
-        
+       
         <label for="tts_voice">Voice Model:</label><br>
         <select id="tts_voice" class="submit" style="width: 320px;">
             <option value="/opt/piper/voices/en_US-lessac-medium.onnx">Lessac (American female)</option>
@@ -42,7 +42,7 @@
             <option value="/opt/piper/voices/en_US-ryan-low.onnx">Ryan (British female)</option>
         </select>
         <br><br>
-        
+       
         <button id="generate_tts" class="submit">Generate WAV File</button>
         <div id="tts_status" style="margin-top:12px; font-weight:bold;"></div>
     </div>
@@ -58,18 +58,18 @@
     <h4 style="color:#7dd9a1; margin-top:0;">Upload Your Own MP3 / WAV Files</h4>
      <label for="file"> This upload will automatically convert MP3 files to WAV for playback on ASL3</label><br>
     <div style="
-        display: inline-flex; 
-        align-items: center; 
-        gap: 12px; 
-        flex-wrap: wrap; 
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
         justify-content: center;
         margin: 15px 0;
     ">
-        <input type="file" id="mp3_upload" accept=".mp3,.wav" 
+        <input type="file" id="mp3_upload" accept=".mp3,.wav"
                style="background:#1e252f; color:#e0e0e0;">
         <button id="upload_btn" class="submit">Upload to /mp3/</button>
     </div>
-    
+   
     <div id="upload_status" style="margin-top:12px; font-weight:bold;"></div>
 </div>
     <!-- ====================== SCHEDULER & PLAYBACK ====================== -->
@@ -81,11 +81,11 @@
         margin-bottom: 25px;
     ">
         <h3 style="color:#8e44ad;">Announcement Scheduler</h3>
-        
+       
         <select id="mp3_select" class="submit" style="width: 320px; border:2px solid #444;">
             <option value="">-- Select Audio File --</option>
         </select>
-        
+       
         <div style="margin:15px 0;">
             <input type="button" class="submit" value="Install Announcement" id="install_announcement">
             <input type="button" class="submit" value="Delete" id="delete_mp3" style="background-color:#dc3545; color:white;">
@@ -96,7 +96,7 @@
         <select id="ul_select" class="submit" style="width: 320px; border:2px solid #444;">
             <option value="">-- Select Announcement --</option>
         </select>
-        
+       
         <div style="margin:12px 0;">
             <input type="button" class="submit" value="Play Now" id="run_ul">
             <input type="button" class="submit" value="Delete" id="delete_ul" style="background-color:#dc3545; color:white;">
@@ -110,10 +110,10 @@
         padding: 20px;
     ">
         <h3 style="color:#e67e22;">Cron Manager</h3>
-        
+       
         <table id="cron_table" border="1" cellpadding="8" style="
-            width:100%; 
-            border-collapse: collapse; 
+            width:100%;
+            border-collapse: collapse;
             background:#fff;
             border: 2px solid #e67e22;
         ">
@@ -127,7 +127,6 @@
                     <th>File</th>
                     <th>Scope</th>
                     <th>Description</th>
-                    <th>Enabled</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -135,13 +134,13 @@
         </table>
     </div>
 </div> <!-- End #announcement-manager -->
-
+<!-- ====================== JAVASCRIPT ====================== -->
 <script>
 $(document).ready(function () {
     function loadMP3Dropdown() {
         $.getJSON("custom/list_mp3.php", function(files) {
             $("#mp3_select").empty().append(
-                $("<option>").val("").text("-- Select Audio File (MP3-WAV) --")
+                $("<option>").val("").text("-- Select Audio File --")
             );
             files.forEach(function(f) {
                 $("#mp3_select").append($("<option>").val(f).text(f));
@@ -178,7 +177,7 @@ $("#upload_btn").click(function() {
         contentType: false,
         success: function(response) {
             $("#upload_status").html(response).css("color", "green");
-            loadMP3Dropdown();  
+            loadMP3Dropdown(); // Refresh the MP3 list
         },
         error: function() {
             $("#upload_status").text(" Upload failed.").css("color", "red");
@@ -188,7 +187,7 @@ $("#upload_btn").click(function() {
     // ==================== Button Handlers ====================
     $("#delete_mp3").click(function() {
         let mp3 = $("#mp3_select").val();
-        if (!mp3) { alert("Select an MP3 file."); return; }
+        if (!mp3) { alert("Select Audio file."); return; }
         if (!confirm("Delete '" + mp3 + "'?")) return;
         $.post("custom/delete_file.php", { type: "mp3", file: mp3 }, function(data) {
             alert(data);
@@ -197,26 +196,26 @@ $("#upload_btn").click(function() {
     });
     $("#local_play_mp3").click(function() {
         let f = $("#mp3_select").val();
-        if (!f) { alert("Select an MP3/WAV file first"); return; }
+        if (!f) { alert("Select Audio file first"); return; }
         $.post("/supermon/custom/run_announcement.php", { file: f, source: "mp3" }, function(r){ alert(r); })
         .fail(function() { alert("Local play failed."); });
     });
     $("#global_play_mp3").click(function() {
         let f = $("#mp3_select").val();
-        if (!f) { alert("Select an MP3/WAV file first"); return; }
+        if (!f) { alert("Select Audio file first"); return; }
         if (!confirm("WARNING: This will play on this node AND all linked nodes.\n\nContinue?")) return;
         $.post("/supermon/custom/globalplay.php", { file: f, source: "mp3" }, function(r){ alert(r); })
         .fail(function() { alert("Global play failed."); });
     });
     $("#run_ul").click(function() {
         let ulFile = $("#ul_select").val();
-        if (!ulFile) { alert("Select a UL file."); return; }
+        if (!ulFile) { alert("Select Audio file."); return; }
         $.post("/supermon/custom/run_announcement.php", { file: ulFile, source: "ul" }, function(data) { alert(data); })
         .fail(function() { alert("Play Now failed."); });
     });
     $("#delete_ul").click(function() {
         let ul = $("#ul_select").val();
-        if (!ul) { alert("Select a UL file."); return; }
+        if (!ul) { alert("Select Audio file."); return; }
         if (!confirm("Delete '" + ul + "' (.ul file)?")) return;
         $.post("custom/delete_file.php", { type: "ul", file: ul }, function(data) {
             alert(data);
@@ -247,7 +246,7 @@ $("#upload_btn").click(function() {
     // ==================== Install Announcement ====================
     $("#install_announcement").click(function() {
         let mp3 = $("#mp3_select").val();
-        if (!mp3) { alert("Select an MP3 file."); return; }
+        if (!mp3) { alert("Select Audio file."); return; }
         let min = prompt("Minute: Which minute of the hour do you want this to play?", "45"); if(min===null) return;
         let hour = prompt("Hour: Which hour or range of hours do you want this to play?\n* = every hour\nsingle= 12\nselected= 6,10,16\nrange= 7-20\nevery 2 hours between selected = 7-19/2", "7-20"); if(hour===null) return;
         let dom = prompt("DOM: Which day or range of days do you want this to play?\n* = everyday\n1-31\nselected= 1,7,23\nrange= 12-18", "*"); if(dom===null) return;
@@ -256,7 +255,7 @@ $("#upload_btn").click(function() {
         let week = "*";
         let useNth = false;
         if (/^[1-7]$/.test(dow.trim())) {
-            week = prompt("Week of month?\n* = every week\n5 = specific week", "*");
+            week = prompt("Week of month?\n* = every week\5 = specific week", "*");
             if (week === null) week = "*";
             week = week.trim();
             if (week !== "*" && week !== "" && /^[1-5]$/.test(week)) {
@@ -332,7 +331,13 @@ $("#upload_btn").click(function() {
                 let isEnabled = !c.raw.startsWith('#');
                 let toggleBtn = $("<button>")
                     .text(isEnabled ? "Enabled" : "Disabled")
-                    .css({ "background-color": isEnabled ? "#28a745" : "#dc3545", "color": "white", "border": "1px solid " + (isEnabled ? "#218838" : "#c82333"), "padding": "6px 12px", "cursor": "pointer" })
+                    .addClass("submit")
+                    .css({ 
+                        "background-color": isEnabled ? "#28a745" : "#dc3545", 
+                        "color": "white", 
+                        
+                        "margin-right": "8px"
+                    })
                     .click(function() {
                         let newState = !isEnabled;
                         if (!confirm(`Really ${newState ? "enable" : "disable"} "${c.file}"?`)) return;
@@ -349,11 +354,11 @@ $("#upload_btn").click(function() {
                     .click(function() {
                         let scope = c.scope || "local";
                         if (!confirm("Play '" + c.file + "' now?\n\nScope: " + scope.toUpperCase())) return;
-                        $.post("custom/run_announcement.php", { 
+                        $.post("custom/run_announcement.php", {
                             file: c.file,
                             scope: scope
-                        }, function(data) { 
-                            alert(data); 
+                        }, function(data) {
+                            alert(data);
                         })
                         .fail(function() { alert("Play Now failed."); });
                     });
@@ -386,8 +391,7 @@ $("#upload_btn").click(function() {
                         loadCronList();
                     });
                 });
-                row.append($("<td>").append(toggleBtn));
-                row.append($("<td>").append(playBtn).append(editBtn).append(delBtn));
+                row.append($("<td>").append(toggleBtn, playBtn, editBtn, delBtn));
                 table.append(row);
             });
         });

@@ -1,4 +1,4 @@
-# Supermon and Allmon3 announcement-creation-and-management-of-cron
+# Supermon and Allmon3 announcement-creation-and-management-of-cronjob entries
  Compatible with Supermon 6.1 through Supermon 8 and Allmon3  for announcement creation and management of cron entries<br>
 # WARNING...WARNING...WARNING
 You will have the ability to create announcements that will play locally on YOUR node only or GLOBALLY on ALL CONNECTED NODES. It is YOUR responsibility to use this wisely and not to cause unwanted interference with other nodes. 

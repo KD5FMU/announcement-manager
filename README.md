@@ -7,8 +7,9 @@ This works on rPi as well as dell wyse thin clients. if it has x86/amd or aarch 
 <br>
 This feature was inspired by KD5FMU, Freddie Mac, the Ham Radio Crusader. His Audio_Convert and Playaudio script files are the basis for this feature.You do not need to install his versions before installing this as this will handle the install for its own needs. 
 
-<img width="1920" height="1032" alt="image" src="https://github.com/user-attachments/assets/808fc895-4a14-4b8f-9860-ba3f1347a71a" />
-<img width="1920" height="1020" alt="image" src="https://github.com/user-attachments/assets/128a639e-50b1-4481-9561-d2fef071d701" />
+
+<img width="793" height="921" alt="image" src="https://github.com/user-attachments/assets/db261b99-c880-411a-a583-7eaebfd77614" />
+<img width="1571" height="806" alt="image" src="https://github.com/user-attachments/assets/82d87f17-a3f3-41ee-b633-4b28007aedf5" />
 
 Supermon is NOT a requirement for this program to work. It WAS made for supermon first, but Allmon3 was added to it. 
 So if you do not have Supermon 7.4+ installed, you will need to install apache2 to handle the scripts. Here is how you do that. You will NOT need to do this if Supermon7.4+ is installed as the apache2 handler will be installed with Supermon7.4+.  NOW TAKE NOTE: if you decide to install Supermon later, then you will need to run this installer again to update the control panel in Supermon for this to show up. 

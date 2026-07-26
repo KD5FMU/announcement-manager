@@ -1,7 +1,7 @@
 <?php
 // allmon-announcement-frame.php
 // Updated by N5AD, July 2026
-// Uses localhost for auth check so it works behind public IP / non-standard ports
+
 
 function isAllmon3LoggedIn(): bool {
   

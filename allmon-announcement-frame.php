@@ -1,13 +1,11 @@
 <?php
 // allmon-announcement-frame.php
-//
-
+// Updated by N5AD, July 2026
+// Uses localhost for auth check so it works behind public IP / non-standard ports
 
 function isAllmon3LoggedIn(): bool {
   
-    $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
-    $host   = $_SERVER['HTTP_HOST'] ?? 'localhost';
-    $checkUrl = "$scheme://$host/allmon3/master/auth/check";
+    $checkUrl = "https://127.0.0.1/allmon3/master/auth/check";
 
     $cookieHeader = $_SERVER['HTTP_COOKIE'] ?? '';
 
@@ -15,28 +13,30 @@ function isAllmon3LoggedIn(): bool {
     curl_setopt_array($ch, [
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_HTTPHEADER     => ["Cookie: $cookieHeader"],
-        CURLOPT_TIMEOUT        => 3,
+        CURLOPT_TIMEOUT        => 5,
+        CURLOPT_FOLLOWLOCATION => false,
         CURLOPT_SSL_VERIFYPEER => false,
         CURLOPT_SSL_VERIFYHOST => false,
     ]);
-    $response = curl_exec($ch);
+
+    $response  = curl_exec($ch);
     $curlError = curl_error($ch);
     curl_close($ch);
 
     if ($response === false) {
         error_log("allmon-announcement-frame.php: auth check curl error: $curlError");
-        return false; // fail closed if Allmon3 can't be reached
+        return false; // fail closed
     }
 
     $data = json_decode($response, true);
     return isset($data['SUCCESS']) && $data['SUCCESS'] === 'Logged In';
 }
 
+// ====================== AUTH CHECK ======================
 if (!isAllmon3LoggedIn()) {
     http_response_code(403);
     echo "<h2 style='text-align:center; color:red; margin-top:80px;'>Access Denied</h2>";
     echo "<p style='text-align:center;'>Please log into Allmon3 then refresh the page.</p>";
-    
     exit;
 }
 ?>

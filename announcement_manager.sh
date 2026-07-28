@@ -530,11 +530,12 @@ download_voice() {
         wget -4 -q "$base_url/${relative_path}.json" -O "$json_file" || warn "Failed to download $json_file"
     fi
 }
-# Download the voices used by the announcement-manager dropdown (prefer low quality)
+# Download the voices used by the announcement-manager dropdown
+# Use low where available; Joe and Kristin only exist as medium
 download_voice "en_US-amy-low.onnx"           "en/en_US/amy/low/en_US-amy-low.onnx"
 download_voice "en_US-lessac-low.onnx"        "en/en_US/lessac/low/en_US-lessac-low.onnx"
-download_voice "en_US-joe-low.onnx"           "en/en_US/joe/low/en_US-joe-low.onnx"
-download_voice "en_US-kristin-low.onnx"       "en/en_US/kristin/low/en_US-kristin-low.onnx"
+download_voice "en_US-joe-medium.onnx"        "en/en_US/joe/medium/en_US-joe-medium.onnx"
+download_voice "en_US-kristin-medium.onnx"    "en/en_US/kristin/medium/en_US-kristin-medium.onnx"
 download_voice "en_US-libritts_r-medium.onnx" "en/en_US/libritts_r/medium/en_US-libritts_r-medium.onnx"
 download_voice "en_US-ryan-low.onnx"          "en/en_US/ryan/low/en_US-ryan-low.onnx"
 # Set sane permissions

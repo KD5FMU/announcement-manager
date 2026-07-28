@@ -109,7 +109,7 @@ else
     END {
         if (in_section && !inserted) {
             print "iframepost=/announcement-manager/allmon-announcement-frame.php"
-            print "iframepre="
+           
             inserted = 1
         }
         if (!inserted) {

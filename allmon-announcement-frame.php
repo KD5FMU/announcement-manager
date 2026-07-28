@@ -5,7 +5,7 @@
 
 function isAllmon3LoggedIn(): bool {
   
-    $checkUrl = "https://localhost/allmon3/master/auth/check";
+    $checkUrl = "https://127.0.0.1/allmon3/master/auth/check";
 
     $cookieHeader = $_SERVER['HTTP_COOKIE'] ?? '';
 

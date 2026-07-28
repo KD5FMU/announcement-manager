@@ -37,8 +37,8 @@
         <select id="tts_voice" class="submit" style="width: 320px;">
             <option value="/var/lib/piper-tts/en_US-amy-low.onnx">Amy (Low, American female) — ASL default</option>
             <option value="/var/lib/piper-tts/en_US-lessac-low.onnx">Lessac (Low, American female)</option>
-            <option value="/var/lib/piper-tts/en_US-joe-low.onnx">Joe (Low, American male)</option>
-            <option value="/var/lib/piper-tts/en_US-kristin-low.onnx">Kristin (Low, American female)</option>
+            <option value="/var/lib/piper-tts/en_US-joe-medium.onnx">Joe (Medium, American male)</option>
+            <option value="/var/lib/piper-tts/en_US-kristin-medium.onnx">Kristin (Medium, American female)</option>
             <option value="/var/lib/piper-tts/en_US-libritts_r-medium.onnx">Libritts_r (Medium, multi-speaker)</option>
             <option value="/var/lib/piper-tts/en_US-ryan-low.onnx">Ryan (Low, American male)</option>
         </select>

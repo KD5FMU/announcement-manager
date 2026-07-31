@@ -109,14 +109,23 @@ function announcement_mgr_allmon3_logged_in(): bool {
  * Require authentication or exit 403
  */
 function announcement_mgr_require_auth(): void {
-    if (announcement_mgr_supermon_logged_in() || announcement_mgr_allmon3_logged_in()) {
+    $sm = announcement_mgr_supermon_logged_in();
+    $am = announcement_mgr_allmon3_logged_in();
+
+    if ($sm || $am) {
         return;
     }
 
     http_response_code(403);
     header('Content-Type: text/plain; charset=UTF-8');
-    echo "Access Denied: please log into Supermon or Allmon3 first.";
+    echo "Access Denied\n";
+    echo "Supermon check: " . ($sm ? "YES" : "NO") . "\n";
+    echo "Allmon3 check: " . ($am ? "YES" : "NO") . "\n";
+    echo "Session name: " . session_name() . "\n";
+    echo "Session id: " . session_id() . "\n";
+    echo "sm61loggedin: ";
+    var_export($_SESSION['sm61loggedin'] ?? 'NOT SET');
+    echo "\nCookies received: " . ($_SERVER['HTTP_COOKIE'] ?? '(none)') . "\n";
     exit;
 }
-
 announcement_mgr_require_auth();

@@ -15,6 +15,7 @@
  * - Cron lines call play scripts via sudo (narrow NOPASSWD only)
  */
 require_once __DIR__ . '/auth_check.inc.php';
+require_once __DIR__ . '/cron_validate.inc.php';
 
 $TMP_DIR        = '/mp3';
 $CONVERT_SCRIPT = '/etc/asterisk/local/audio_convert.sh';
@@ -47,6 +48,25 @@ $pause_seconds = isset($_POST['pause']) ? floatval($_POST['pause']) : 0;
 
 if (!$mp3) {
     die("Error: No audio file specified.");
+}
+
+// ---------- Validate scope / mode ----------
+$scope = strtolower(trim($scope));
+$mode  = strtolower(trim($mode));
+if (!in_array($scope, ['local', 'global'], true)) {
+    die("Error: Invalid scope (use local or global).");
+}
+if (!in_array($mode, ['polite', 'priority'], true)) {
+    die("Error: Invalid mode (use polite or priority).");
+}
+$desc = announcement_mgr_safe_desc($desc);
+
+// ---------- Validate cron fields when scheduling ----------
+if ($min !== '' && $hour !== '') {
+    $err = announcement_mgr_validate_schedule($min, $hour, $dom, $month, $dow, $week, $use_nth);
+    if ($err !== null) {
+        die("Error: $err");
+    }
 }
 
 // ---------- Validate source file ----------

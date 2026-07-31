@@ -6,6 +6,7 @@
  * Modified by N5AD
  */
 require_once __DIR__ . '/auth_check.inc.php';
+require_once __DIR__ . '/cron_validate.inc.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
@@ -24,6 +25,12 @@ $use_nth  = !empty($_POST['use_nth']) && $_POST['use_nth'] == 1;
 
 if (!$raw_line || $min === '' || $hour === '' || $dom === '' || $month === '' || $dow === '') {
     echo "Missing required fields.";
+    exit;
+}
+
+$err = announcement_mgr_validate_schedule($min, $hour, $dom, $month, $dow, $week, $use_nth);
+if ($err !== null) {
+    echo "Error: $err";
     exit;
 }
 

@@ -68,7 +68,9 @@ if (!isAllmon3LoggedIn()) {
         h1 { text-align: center; margin-bottom: 25px; }
         table, form, div { margin-left: auto; margin-right: auto; }
         @media (max-width: 1800px) { .container { max-width: 95%; } }
+      
     </style>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
     <div class="container">

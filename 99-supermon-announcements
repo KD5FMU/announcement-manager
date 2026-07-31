@@ -1,0 +1,20 @@
+# /etc/sudoers.d/99-supermon-announcements
+# Hardened Announcement Manager - N5AD
+# Managed by announcement_manager.sh — do not edit manually
+# Principle: www-data may only run the exact helper scripts below (freeloader-style)
+# Created/updated: July 2026
+
+# Playback (local + global + polite variants)
+www-data ALL=(root) NOPASSWD: /etc/asterisk/local/playaudio.sh
+www-data ALL=(root) NOPASSWD: /etc/asterisk/local/playglobal.sh
+www-data ALL=(root) NOPASSWD: /etc/asterisk/local/polite_play.sh
+www-data ALL=(root) NOPASSWD: /etc/asterisk/local/polite_global.sh
+
+# Audio conversion (MP3/WAV → .ul)
+www-data ALL=(root) NOPASSWD: /etc/asterisk/local/audio_convert.sh
+
+# Piper TTS generation
+www-data ALL=(root) NOPASSWD: /usr/local/bin/piper_prompt_tts.sh
+
+# NO crontab, cp, chown, chmod, or rm privileges
+# Cron jobs now live in www-data's own user crontab

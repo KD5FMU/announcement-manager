@@ -9,7 +9,8 @@ This feature was inspired by KD5FMU, Freddie Mac, the Ham Radio Crusader. His Au
 
 
 <img width="793" height="921" alt="image" src="https://github.com/user-attachments/assets/db261b99-c880-411a-a583-7eaebfd77614" />
-<img width="1571" height="806" alt="image" src="https://github.com/user-attachments/assets/82d87f17-a3f3-41ee-b633-4b28007aedf5" />
+
+<img width="1443" height="906" alt="image" src="https://github.com/user-attachments/assets/9dc4bdab-b878-470d-a715-20be7b9d2a37" />
 
 Supermon is NOT a requirement for this program to work. It WAS made for supermon first, but Allmon3 was added to it. 
 So if you do not have Supermon 7.4+ installed, you will need to install apache2 to handle the scripts. Here is how you do that. You will NOT need to do this if Supermon7.4+ is installed as the apache2 handler will be installed with Supermon7.4+.  NOW TAKE NOTE: if you decide to install Supermon later, then you will need to run this installer again to update the control panel in Supermon for this to show up. 

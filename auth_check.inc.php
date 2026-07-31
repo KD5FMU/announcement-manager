@@ -21,10 +21,25 @@ define('ANNOUNCEMENT_MGR_AUTH_CHECKED', true);
  */
 function announcement_mgr_supermon_logged_in(): bool {
     if (session_status() === PHP_SESSION_NONE) {
-        // Match typical Supermon session name if already active; otherwise start default
-        @session_start();
+        // Must use the same session name Supermon uses
+        @session_start(['name' => 'supermon61']);
     }
-
+    $flags = [
+        'sm61loggedin',
+        'smloggedin',
+        'loggedin',
+        'supermon_loggedin',
+    ];
+    foreach ($flags as $key) {
+        if (!empty($_SESSION[$key]) && $_SESSION[$key] === true) {
+            return true;
+        }
+        if (isset($_SESSION[$key]) && ($_SESSION[$key] === 'yes' || $_SESSION[$key] === 1 || $_SESSION[$key] === '1')) {
+            return true;
+        }
+    }
+    return false;
+}
     // Known Supermon session flags across versions
     $flags = [
         'sm61loggedin',

@@ -62,6 +62,9 @@ sudo bash announcement_manager.sh
 ```
 Then follow the promts.
 
+The cronjobs are now stored in the user crontab and can now be seen at ``` sudo crontab -u www-data -e``` 
+They no longer reside int the root crontab for security purposes. 
+
 The cron table will only show the announcements that were created by this program. If you have announcements that you created by other means, they will not show up here.
 You can also schedule announcements for non standard times such as running an announcement on the second tuesday of every month. Just follow the prompts when you schedule the announcement. 
 You can also create an MP3 of your own voice and save that in the MP3 directory. This directory is user accessable via ssh and  you do not need any special permissions to place files there. 

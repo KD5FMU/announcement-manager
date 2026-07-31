@@ -72,8 +72,8 @@ if (!isAllmon3LoggedIn()) {
 </head>
 <body>
     <div class="container">
-        <h1>Announcement Manager</h1>
-        <?php include '/var/www/html/announcement-manager/allmon-announcement.inc'; ?>
+     
+        <?php include '/var/www/html/announcement-manager/announcement.inc'; ?>
     </div>
 </body>
 </html>

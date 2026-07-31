@@ -4,7 +4,7 @@
 // Created by N5AD - Updated for native ASL3 asl3-tts (piper)
 // Voices now live in /var/lib/piper-tts/
 ?>
-<?php if (isset($_SESSION['sm61loggedin']) && $_SESSION['sm61loggedin'] === true) { ?>
+<?php //if (isset($_SESSION['sm61loggedin']) && $_SESSION['sm61loggedin'] === true) { ?>
 <div id="announcement-manager" style="
     background: #f8f9fa;
     border: 2px solid #2c3e50;
@@ -404,4 +404,4 @@ $("#upload_btn").click(function() {
     loadCronList();
 });
 </script>
-<?php } ?>
+<?php //} ?>

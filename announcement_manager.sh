@@ -304,55 +304,69 @@ CONVERT_SCRIPT="$LOCAL_DIR/audio_convert.sh"
 if [[ ! -f "$CONVERT_SCRIPT" ]]; then
     echo "Creating $CONVERT_SCRIPT (missing)"
 else
-    echo "Updating $CONVERT_SCRIPT with latest version"
+    echo "Updating $CONVERT_SCRIPT with latest robust version"
 fi
 cat > "$CONVERT_SCRIPT" << 'EOF'
 #!/bin/bash
 #
 # audio_convert.sh - Convert audio file to ulaw .ul with optional leading pause
 #
-# Usage: audio_convert.sh input_file [output_file.ul] [pause_seconds]
+# Usage: audio_convert.sh input_file output_file.ul [pause_seconds]
 #
-# - If output_file is not specified, it will be named like input_file but with .ul extension
+# - output_file is required (announcement.php always supplies the full path)
 # - pause_seconds: optional number of seconds of silence to add at the start (default 0)
 #
 # Requires sox (apt install sox libsox-fmt-mp3)
-if [ $# -lt 1 ]; then
-    echo "Usage: $0 input_file [output_file.ul] [pause_seconds]"
-    echo "Example: $0 announcement.mp3 announcement.ul 1.5"
-    exit 1
-fi
+# Written to be robust under both bash and when called via sudo from PHP
+
 INPUT_FILE="$1"
-OUTPUT_FILE="${2:-${INPUT_FILE%.*}.ul}"
+OUTPUT_FILE="$2"
 PAUSE_SECONDS="${3:-0}"
-# Validate pause is a number (including decimals)
-if ! [[ "$PAUSE_SECONDS" =~ ^[0-9]*\.?[0-9]+$ ]]; then
-    echo "Error: pause_seconds must be a number (e.g. 1, 0.5, 2.3)"
+
+if [ -z "$INPUT_FILE" ] || [ -z "$OUTPUT_FILE" ]; then
+    echo "Usage: $0 input_file output_file.ul [pause_seconds]"
+    echo "Example: $0 /mp3/announcement.wav /usr/local/share/asterisk/sounds/announcements/announcement.ul 1.5"
     exit 1
 fi
-# If pause > 0, create a temporary silence file and concatenate
-if (( $(awk 'BEGIN {print ('"$PAUSE_SECONDS"' > 0)}') )); then
+
+if [ ! -f "$INPUT_FILE" ]; then
+    echo "ERROR: Input file not found: $INPUT_FILE"
+    exit 1
+fi
+
+if ! command -v sox >/dev/null 2>&1; then
+    echo "ERROR: sox not found"
+    exit 1
+fi
+
+# Validate pause is a number (POSIX-friendly)
+case "$PAUSE_SECONDS" in
+    ''|*[!0-9.]* )
+        echo "ERROR: pause_seconds must be a number (e.g. 0, 1, 1.5)"
+        exit 1
+        ;;
+esac
+
+if [ "$(echo "$PAUSE_SECONDS > 0" | bc -l 2>/dev/null || echo 0)" = "1" ]; then
     TEMP_SILENCE=$(mktemp --suffix=.wav)
-  
-    # Create silence at correct format
     sox -n -r 8000 -c 1 -e u-law "$TEMP_SILENCE" trim 0 "$PAUSE_SECONDS"
-  
-    # Concatenate silence + original audio, then convert to ulaw
     sox "$TEMP_SILENCE" "$INPUT_FILE" -t raw -r 8000 -c 1 -e u-law "$OUTPUT_FILE"
-  
+    RC=$?
     rm -f "$TEMP_SILENCE"
 else
-    # No pause — original behavior
     sox "$INPUT_FILE" -t raw -r 8000 -c 1 -e u-law "$OUTPUT_FILE"
+    RC=$?
 fi
-if [ $? -eq 0 ]; then
-    echo "Conversion successful!"
-    echo "Output file: $OUTPUT_FILE"
-    if (( $(awk 'BEGIN {print ('"$PAUSE_SECONDS"' > 0)}') )); then
+
+if [ $RC -eq 0 ] && [ -f "$OUTPUT_FILE" ]; then
+    echo "Conversion successful: $OUTPUT_FILE"
+    if [ "$(echo "$PAUSE_SECONDS > 0" | bc -l 2>/dev/null || echo 0)" = "1" ]; then
         echo "Added ${PAUSE_SECONDS} second pause at the beginning."
     fi
+    exit 0
 else
-    echo "Error: Conversion failed."
+    echo "Conversion failed (exit $RC)"
+    exit 1
 fi
 EOF
 chmod +x "$CONVERT_SCRIPT"

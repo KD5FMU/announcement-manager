@@ -1,6 +1,6 @@
 <?php
 // announcement.inc
-// Loaded only after Supermon or Allmon3
+// Loaded only after Supermon or Allmon3 confirmed login
 // Created by N5AD - Updated for native ASL3 asl3-tts (piper)
 // Voices now live in /var/lib/piper-tts/
 ?>
